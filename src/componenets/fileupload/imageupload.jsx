@@ -31,7 +31,7 @@ const ImageUpload = ({ heading, acceptFileType }) => {
         variant="h6"
         sx={{
           fontSize: "20px",
-          color: "black",
+          color: "#fff",
         }}
       >
         {heading}
@@ -69,7 +69,7 @@ const ImageUpload = ({ heading, acceptFileType }) => {
                 p: 0,
               }}
             >
-              <ImageIcon sx={{ fontSize: 100, color: "#000" }} />
+              <ImageIcon sx={{ fontSize: 100, color: "rgba(0, 213, 255, 0.37);" }} />
             </IconButton>
           )}
         </label>

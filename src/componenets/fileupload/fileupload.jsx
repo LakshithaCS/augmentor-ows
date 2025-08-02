@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
+import "./fileupload.css";
 
 const FileUpload = ({ heading, uploadButtonText, acceptFileType }) => {
   const [fileName, setFileName] = useState("");
@@ -30,7 +31,7 @@ const FileUpload = ({ heading, uploadButtonText, acceptFileType }) => {
       {/* Heading */}
       <Typography
         variant="h6"
-        sx={{ position: "absolute", top: "10px", left: "15px", fontSize: "20px", color: "black" }}
+        sx={{ position: "absolute", top: "10px", left: "15px", fontSize: "20px", color: "#fff"}}
       >
         {heading}
       </Typography>
@@ -49,7 +50,7 @@ const FileUpload = ({ heading, uploadButtonText, acceptFileType }) => {
         <Button
           variant="contained"
           component="label"
-          sx={{ color: "white", backgroundColor: "black", height: "50px", borderRadius: "50px" }}
+          sx={{ height: "50px", borderRadius: "50px", background: "rgba(0, 213, 255, 0.37)" }}
         >
           {uploadButtonText}
           <input
@@ -60,7 +61,7 @@ const FileUpload = ({ heading, uploadButtonText, acceptFileType }) => {
           />
         </Button>
         {fileName && (
-          <Typography variant="body2" sx={{ mt: 1, color: "black" }}>
+          <Typography variant="body2" sx={{ mt: 1, color: "#fff" }}>
             filename: {fileName}
           </Typography>
         )}
@@ -69,9 +70,9 @@ const FileUpload = ({ heading, uploadButtonText, acceptFileType }) => {
       {/* Submit Button */}
       <Box sx={{ display: "flex", justifyContent: "center", pb: 2 }}>
         <Button
+          className="submit-button"
           variant="contained"
-          color="primary"
-          sx={{ width: "20%", color: "white", backgroundColor: "black", height: "40px", borderRadius: "40px" }}
+          sx={{ width: "20%", height: "40px", borderRadius: "40px", background: "rgba(0, 213, 255, 0.17)" }}
           onClick={handleSubmit}
           disabled={!fileName}
         >
