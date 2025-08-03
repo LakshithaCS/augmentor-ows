@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import Switch from "@mui/material/Switch";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -23,8 +22,8 @@ var styles = {
     color: "#fff",
     fontFamily: "Arial",
     "& .MuiOutlinedInput-notchedOutline": {
-      borderColor: "#fff",
-      borderWidth: "1px",
+      borderColor: "rgba(255, 255, 255, 0.1)",
+      borderWidth: "2px",
     },
     "&.Mui-focused": {
       "& .MuiOutlinedInput-notchedOutline": {
@@ -124,12 +123,14 @@ function Publish() {
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         ContentProps={{
           sx: {
-            backgroundColor: "#d32f2f", // Deep red (Material UI error color)
-            color: "#fff", // White text
-            fontWeight: "bold",
-            fontSize: "16px",
+            backgroundColor: "#d32f2f", // darker red
+            color: "#fff",
+            fontSize: "15px",
             borderRadius: "8px",
             padding: "10px 16px",
+            fontFamily: "'Roboto', 'Helvetica Neue', Arial, sans-serif", // Clean & standard
+            fontWeight: 600, // Adds emphasis for error
+            letterSpacing: "0.5px", // Slight spacing for readability
           },
         }}
       />
@@ -270,7 +271,10 @@ function Publish() {
                 }}
               />
             </div>
-            <div className="row" hidden={!(formData.category?.toLowerCase() === "housing")}>
+            <div
+              className="row"
+              hidden={!(formData.category?.toLowerCase() === "housing")}
+            >
               <TextField
                 label="Your Client's AugmentoR Email Id"
                 variant="outlined"
@@ -324,7 +328,10 @@ function Publish() {
             />
           </div>
 
-          <div className="row" hidden={!(formData.category?.toLowerCase() === "housing")}>
+          <div
+            className="row"
+            hidden={!(formData.category?.toLowerCase() === "housing")}
+          >
             <TextField
               label="Your Client's AugmentoR Email Id"
               variant="outlined"

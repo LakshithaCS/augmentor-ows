@@ -35,34 +35,6 @@ body {
     -webkit-text-fill-color: transparent;
 }
 
-.features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    margin-top: 50px;
-}
-
-.feature-card {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 30px;
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
-    transform-style: preserve-3d;
-}
-
-.feature-card:hover {
-    transform: translateY(-10px) rotateX(5deg);
-    box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
-}
-
-.feature-card h3 {
-    color: #00d4ff;
-    margin-bottom: 15px;
-    font-size: 1.5rem;
-}
-
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {

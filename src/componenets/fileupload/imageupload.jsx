@@ -18,12 +18,15 @@ const ImageUpload = ({ heading, acceptFileType }) => {
         width: "80%",
         height: "80%",
         margin: "2% 10% 10% 10%",
-        border: "2px solid #ccc",
+        border: "1px solid rgba(255, 255, 255, 0.1)",
         borderRadius: "12px",
         display: "flex",
         flexDirection: "column",
         position: "relative",
         p: 2,
+        background: "rgba(255, 255, 255, 0.05)",
+        backdropFilter: "blur(10px)",
+        transformStyle: "preserve-3d"
       }}
     >
       {/* Heading */}
