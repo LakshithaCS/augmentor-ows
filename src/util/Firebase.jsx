@@ -5,15 +5,15 @@ import { getStorage } from "firebase/storage";
 import { initializeApp } from "firebase/app";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyC3yXn12qPcbINe0mZPSXBt6y-L-D_Q3p0",
-    authDomain: "augmentor-5cf0a.firebaseapp.com",
-    databaseURL: "https://augmentor-5cf0a-default-rtdb.firebaseio.com/",
-    projectId: "augmentor-5cf0a",
-    storageBucket: "augmentor-5cf0a.appspot.com",
-    messagingSenderId: "913231258643",
-    appId: "1:913231258643:web:dcafb0d828ee4b8ec48be6",
-    measurementId: "G-W2ZMEEPK20"
-  };
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: `${process.env.REACT_APP_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+  databaseURL: `https://${process.env.REACT_APP_FIREBASE_DATABASE_NAME}.firebaseio.com/`,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: `${process.env.REACT_APP_FIREBASE_PROJECT_ID}.firebasestorage.app`,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
