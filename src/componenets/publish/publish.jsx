@@ -8,6 +8,8 @@ import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
+import Autocomplete from "@mui/material/Autocomplete";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 import FileUpload from "../fileupload/fileupload";
 import ImageUpload from "../fileupload/imageupload";
@@ -55,6 +57,7 @@ function Publish() {
     audioFile: null,
     thumbnail: null,
     preview: false,
+    email: "",
   });
 
   const [categories, setCategories] = React.useState([]);
@@ -98,8 +101,7 @@ function Publish() {
     async function fetchCategories() {
       try {
         const keys = await getModelCategories();
-        const newCategories = keys.map((key) => ({ value: key, label: key }));
-        setCategories(newCategories);
+        setCategories(keys);
       } catch (e) {
         setError(
           "We are facing an internal server error, please try again later!"
@@ -165,19 +167,22 @@ function Publish() {
           />
         </div>
         <div className="col-sm-12 col-lg-6">
-          <TextField
-            select
-            label="Categorize Your Model"
-            sx={styles}
+          <Autocomplete
+            disablePortal
+            freeSolo
+            forcePopupIcon
+            options={categories}
             value={formData.category}
-            onChange={(e) => handleChange("category", e.target.value)}
-          >
-            {categories.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
+            onChange={(event, newValue) => handleChange("category", newValue)}
+            onInputChange={(event, newInputValue) =>
+              handleChange("category", newInputValue)
+            }
+            sx={styles}
+            popupIcon={<ArrowDropDownIcon sx={{ color: "#fff" }} />}
+            renderInput={(params) => (
+              <TextField {...params} label="Categorize Your Model" />
+            )}
+          />
         </div>
       </div>
 
@@ -208,7 +213,7 @@ function Publish() {
       </div>
 
       <div className="row">
-        <div className="col-sm-12 col-lg-6" style={{ height: "400px" }}>
+        <div className="col-sm-12 col-lg-6" style={{ height: "350px" }}>
           <FileUpload
             heading={"3D Model File"}
             uploadButtonText={"CHOOSE FILE"}
@@ -232,7 +237,7 @@ function Publish() {
 
         <div
           className="col-sm-12 col-lg-6"
-          style={{ height: "400px" }}
+          style={{ height: "350px" }}
           hidden={!formData.syncAudio}
         >
           <FileUpload
@@ -265,6 +270,15 @@ function Publish() {
                 }}
               />
             </div>
+            <div className="row" hidden={!(formData.category?.toLowerCase() === "housing")}>
+              <TextField
+                label="Your Client's AugmentoR Email Id"
+                variant="outlined"
+                sx={styles}
+                value={formData.email}
+                onChange={(e) => handleChange("modelName", e.target.value)}
+              />
+            </div>
             <div className="row d-none d-lg-block" style={{ color: "black" }}>
               <h5 style={{ ...styles, fontWeight: "1000" }}>
                 Preview
@@ -280,7 +294,7 @@ function Publish() {
       </div>
 
       <div className="row">
-        <div className="col-sm-12 col-lg-6" style={{ height: "200px" }}>
+        <div className="col-sm-12 col-lg-6" style={{ height: "280px" }}>
           <ImageUpload
             heading={"Select a Thumbnail"}
             uploadButtonText={"CHOOSE FILE"}
@@ -309,6 +323,17 @@ function Publish() {
               }}
             />
           </div>
+
+          <div className="row" hidden={!(formData.category?.toLowerCase() === "housing")}>
+            <TextField
+              label="Your Client's AugmentoR Email Id"
+              variant="outlined"
+              sx={styles}
+              value={formData.email}
+              onChange={(e) => handleChange("modelName", e.target.value)}
+            />
+          </div>
+
           <div className="row" style={{ color: "black" }}>
             <h5 style={{ ...styles, fontWeight: "1000" }}>
               Preview
@@ -343,6 +368,18 @@ function Publish() {
                     ),
                   },
                 }}
+              />
+            </div>
+          )}
+
+          {formData.category?.toLowerCase() === "housing" && (
+            <div className="row d-block d-lg-none">
+              <TextField
+                label="Your Client's AugmentoR Email Id"
+                variant="outlined"
+                sx={styles}
+                value={formData.email}
+                onChange={(e) => handleChange("modelName", e.target.value)}
               />
             </div>
           )}

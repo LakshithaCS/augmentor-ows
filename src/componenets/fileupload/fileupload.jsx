@@ -66,19 +66,6 @@ const FileUpload = ({ heading, uploadButtonText, acceptFileType }) => {
           </Typography>
         )}
       </Box>
-
-      {/* Submit Button */}
-      <Box sx={{ display: "flex", justifyContent: "center", pb: 2 }}>
-        <Button
-          className="submit-button"
-          variant="contained"
-          sx={{ width: "20%", height: "40px", borderRadius: "40px", background: "rgba(0, 213, 255, 0.17)" }}
-          onClick={handleSubmit}
-          disabled={!fileName}
-        >
-          Submit
-        </Button>
-      </Box>
     </Box>
   );
 };

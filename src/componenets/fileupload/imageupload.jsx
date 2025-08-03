@@ -53,8 +53,8 @@ const ImageUpload = ({ heading, acceptFileType }) => {
               src={file}
               alt="Preview"
               sx={{
-                maxWidth: "100px",
-                maxHeight: "100px",
+                maxWidth: "150px",
+                maxHeight: "150px",
                 borderRadius: "8px",
                 objectFit: "cover",
                 cursor: "pointer",
@@ -69,7 +69,7 @@ const ImageUpload = ({ heading, acceptFileType }) => {
                 p: 0,
               }}
             >
-              <ImageIcon sx={{ fontSize: 100, color: "rgba(0, 213, 255, 0.37);" }} />
+              <ImageIcon sx={{ fontSize: 150, color: "rgba(0, 213, 255, 0.37);" }} />
             </IconButton>
           )}
         </label>
