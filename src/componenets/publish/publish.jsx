@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import Switch from "@mui/material/Switch";
@@ -6,16 +6,13 @@ import InputAdornment from "@mui/material/InputAdornment";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import FileUpload from "../fileupload/fileupload";
 import ImageUpload from "../fileupload/imageupload";
+import { getModelCategories } from "../../util/Firebase";
 import "./publish.css";
-
-var categories = [
-  { value: "animal", label: "Animal" },
-  { value: "vehicle", label: "Vehicle" },
-  { value: "furniture", label: "Furniture" },
-];
 
 var styles = {
   width: "80%",
@@ -60,7 +57,9 @@ function Publish() {
     preview: false,
   });
 
+  const [categories, setCategories] = React.useState([]);
   const [open, setOpen] = React.useState(false);
+  const [error, setError] = React.useState("Something Went Wrong!");
 
   const handleClick = () => {
     setOpen(true);
@@ -80,6 +79,7 @@ function Publish() {
       value &&
       (formData.thumbnail === null || formData.price === "")
     ) {
+      setError("Please select the thumbnail and mark the price!");
       handleClick();
     } else {
       setFormData((prev) => ({ ...prev, [field]: value }));
@@ -94,6 +94,22 @@ function Publish() {
     console.log("Submitting form data:", formData);
   };
 
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const keys = await getModelCategories();
+        const newCategories = keys.map((key) => ({ value: key, label: key }));
+        setCategories(newCategories);
+      } catch (e) {
+        setError(
+          "We are facing an internal server error, please try again later!"
+        );
+        handleClick();
+      }
+    }
+    fetchCategories();
+  }, []);
+
   function Error() {
     return (
       <Snackbar
@@ -101,9 +117,7 @@ function Publish() {
         autoHideDuration={3000}
         onClose={handleClose}
         message={
-          <span style={{ color: "#fff", fontWeight: "bold" }}>
-            Please select the thumbnail and mark the price!
-          </span>
+          <span style={{ color: "#fff", fontWeight: "bold" }}>{error}</span>
         }
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         ContentProps={{
@@ -121,7 +135,24 @@ function Publish() {
   }
 
   return (
-    <section className="container" style={{ height: "100vh" }}>
+    <section className="container" style={{ minHeight: "100vh" }}>
+      <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={categories.length === 0}
+      >
+        <svg width={0} height={0}>
+          <defs>
+            <linearGradient id="my_gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#e01cd5" />
+              <stop offset="100%" stopColor="#1CB5E0" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <CircularProgress
+          size={80}
+          sx={{ "svg circle": { stroke: "url(#my_gradient)" } }}
+        />
+      </Backdrop>
       <Error />
       <div className="row" style={{ paddingTop: "50px" }}>
         <div className="col-sm-12 col-lg-6">
@@ -257,10 +288,7 @@ function Publish() {
             onFileSelect={(file) => handleFileChange("thumbnail", file)}
           />
         </div>
-        <div
-          className="col-sm-12 col-lg-6"
-          hidden={!formData.syncAudio}
-        >
+        <div className="col-sm-12 col-lg-6" hidden={!formData.syncAudio}>
           <div className="row" hidden={formData.isFree}>
             <TextField
               label="Mark Your Price"
