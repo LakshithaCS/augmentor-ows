@@ -43,8 +43,8 @@ var styles = {
     color: "#fff",
     "&.Mui-focused": {
       color: "secondary.main",
-    }
-  }
+    },
+  },
 };
 
 function Publish() {
@@ -152,7 +152,7 @@ function Publish() {
 
       <div className="row">
         <div className="col-sm-12 col-lg-6">
-          <h5 style={{ ...styles, fontWeight: "1000"}}>
+          <h5 style={{ ...styles, fontWeight: "1000" }}>
             Publish for free
             <Switch
               checked={formData.isFree}
@@ -225,7 +225,9 @@ function Publish() {
                   input: {
                     endAdornment: (
                       <InputAdornment position="end">
-                        <CurrencyExchangeIcon sx={{ color: "rgba(0, 212, 255, 0.6);" }} />
+                        <CurrencyExchangeIcon
+                          sx={{ color: "rgba(0, 212, 255, 0.6);" }}
+                        />
                       </InputAdornment>
                     ),
                   },
@@ -257,7 +259,6 @@ function Publish() {
         </div>
         <div
           className="col-sm-12 col-lg-6"
-          style={{ height: "200px" }}
           hidden={!formData.syncAudio}
         >
           <div className="row" hidden={formData.isFree}>
@@ -271,7 +272,9 @@ function Publish() {
                 input: {
                   endAdornment: (
                     <InputAdornment position="end">
-                      <CurrencyExchangeIcon sx={{ color: "rgba(0, 212, 255, 0.6);" }} />
+                      <CurrencyExchangeIcon
+                        sx={{ color: "rgba(0, 212, 255, 0.6);" }}
+                      />
                     </InputAdornment>
                   ),
                 },
@@ -293,24 +296,28 @@ function Publish() {
 
       {!formData.syncAudio && (
         <>
-          <div className="row d-block d-lg-none" hidden={formData.isFree}>
-            <TextField
-              label="Mark Your Price"
-              variant="outlined"
-              sx={styles}
-              value={formData.price}
-              onChange={(e) => handleChange("price", e.target.value)}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <CurrencyExchangeIcon sx={{ color: "rgba(0, 212, 255, 0.6);" }} />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-          </div>
+          {!formData.isFree && (
+            <div className="row d-block d-lg-none">
+              <TextField
+                label="Mark Your Price"
+                variant="outlined"
+                sx={styles}
+                value={formData.price}
+                onChange={(e) => handleChange("price", e.target.value)}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <CurrencyExchangeIcon
+                          sx={{ color: "rgba(0, 212, 255, 0.6);" }}
+                        />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+            </div>
+          )}
 
           <div className="row d-block d-lg-none" style={{ color: "black" }}>
             <h5 style={{ ...styles, fontWeight: "1000" }}>
