@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { Box, Typography, IconButton } from "@mui/material";
 import ImageIcon from "@mui/icons-material/Image";
 
-const ImageUpload = ({ heading, acceptFileType }) => {
+const ImageUpload = ({ heading, acceptFileType, onFileSelect }) => {
   const [file, setFile] = useState(null);
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
+    onFileSelect(selectedFile);
     if (selectedFile) {
       setFile(URL.createObjectURL(selectedFile)); // Create image preview URL
     }
@@ -72,7 +73,7 @@ const ImageUpload = ({ heading, acceptFileType }) => {
                 p: 0,
               }}
             >
-              <ImageIcon sx={{ fontSize: 150, color: "rgba(0, 213, 255, 0.37);" }} />
+              <ImageIcon sx={{ fontSize: 150, color: "rgba(0, 213, 255, 0.37)" }} />
             </IconButton>
           )}
         </label>

@@ -2,16 +2,13 @@ import React, { useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import "./fileupload.css";
 
-const FileUpload = ({ heading, uploadButtonText, acceptFileType }) => {
+const FileUpload = ({ heading, uploadButtonText, acceptFileType, onFileSelect}) => {
   const [fileName, setFileName] = useState("");
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
+    onFileSelect(file);
     setFileName(file ? file.name : "");
-  };
-
-  const handleSubmit = () => {
-    alert("File submitted: " + fileName);
   };
 
   return (

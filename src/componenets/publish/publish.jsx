@@ -9,6 +9,7 @@ import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import Autocomplete from "@mui/material/Autocomplete";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 
 import FileUpload from "../fileupload/fileupload";
 import ImageUpload from "../fileupload/imageupload";
@@ -62,6 +63,40 @@ function Publish() {
   const [categories, setCategories] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const [error, setError] = React.useState("Something Went Wrong!");
+  const [userProfile, setUserProfile] = React.useState({
+    sub: "",
+    name: "",
+    given_name: "",
+    family_name: "",
+    picture: "",
+    email: "",
+    email_verified: false,
+  });
+
+  const login = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      console.log("Access Token:", tokenResponse.access_token);
+
+      // Optional: Fetch user info from Google API using access token
+      fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: {
+          Authorization: `Bearer ${tokenResponse.access_token}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((user) => {
+          setUserProfile({...userProfile, user});
+          alert("Hello " + user.given_name + " " + user.family_name);
+          localStorage.setItem("GOOGLE_USER_INFO", JSON.stringify(user));
+        });
+    },
+    onError: (error) => console.log("Login Failed:", error),
+  });
+
+  const logOut = () => {
+    googleLogout();
+    localStorage.removeItem("GOOGLE_USER_INFO");
+  };
 
   const handleClick = () => {
     setOpen(true);
@@ -94,6 +129,7 @@ function Publish() {
 
   const handleSubmit = () => {
     console.log("Submitting form data:", formData);
+    login();
   };
 
   useEffect(() => {
@@ -109,6 +145,12 @@ function Publish() {
       }
     }
     fetchCategories();
+    const userinfo = localStorage.getItem("GOOGLE_USER_INFO");
+    if (userinfo && userinfo !== undefined) {
+      let temp = JSON.parse(userinfo);
+      setUserProfile({...userProfile, temp});
+      alert("Hello " + temp.given_name + " " + temp.family_name);
+    }
   }, []);
 
   function Error() {
@@ -280,7 +322,7 @@ function Publish() {
                 variant="outlined"
                 sx={styles}
                 value={formData.email}
-                onChange={(e) => handleChange("modelName", e.target.value)}
+                onChange={(e) => handleChange("email", e.target.value)}
               />
             </div>
             <div className="row d-none d-lg-block" style={{ color: "black" }}>
@@ -337,7 +379,7 @@ function Publish() {
               variant="outlined"
               sx={styles}
               value={formData.email}
-              onChange={(e) => handleChange("modelName", e.target.value)}
+              onChange={(e) => handleChange("email", e.target.value)}
             />
           </div>
 
@@ -386,7 +428,7 @@ function Publish() {
                 variant="outlined"
                 sx={styles}
                 value={formData.email}
-                onChange={(e) => handleChange("modelName", e.target.value)}
+                onChange={(e) => handleChange("email", e.target.value)}
               />
             </div>
           )}

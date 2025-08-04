@@ -6,7 +6,7 @@ function Services() {
       <section
         id="services"
         className="section"
-        style={{minHeight: "100vh !important;"}}
+        style={{minHeight: "100vh !important"}}
       >
         <h2>Our Services</h2>
         <div className="features">
