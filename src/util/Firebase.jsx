@@ -1,5 +1,9 @@
 import { ref as dbRef, get } from "firebase/database";
-import { ref as storageRef, getDownloadURL } from "firebase/storage";
+import {
+  ref as storageRef,
+  getDownloadURL,
+  uploadBytesResumable,
+} from "firebase/storage";
 import { getDatabase } from "firebase/database";
 import { getStorage } from "firebase/storage";
 import { initializeApp } from "firebase/app";
@@ -42,7 +46,7 @@ async function getModelUrl(path) {
     const snapshot = await get(dbRef(database, path));
     if (snapshot.exists()) {
       let data = snapshot.val();
-      return {"modelUrl" : data.modelUrl, "audioUrl" : data.audioUrl};
+      return { modelUrl: data.modelUrl, audioUrl: data.audioUrl };
     } else {
       console.warn("No data available at path:", path);
       return null;
@@ -63,4 +67,41 @@ async function getDownloadURLFromStorage(path) {
   }
 }
 
-export { getModelUrl, getDownloadURLFromStorage, getModelCategories };
+function uploadFileToStorage(file, path) {
+  const fileref = storageRef(storage, path);
+  const uploadTask = uploadBytesResumable(fileref, file);
+  uploadTask.on(
+    "state_changed",
+    (snapshot) => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log("Upload is " + progress + "% done");
+      switch (snapshot.state) {
+        case "paused":
+          console.log("Upload is paused");
+          break;
+        case "running":
+          console.log("Upload is running");
+          break;
+      }
+    },
+    (error) => {
+      // Handle unsuccessful uploads
+      console.log(error);
+      console.log(error.code);
+    },
+    () => {
+      // Handle successful uploads on complete
+      // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+      getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+        console.log("File available at", downloadURL);
+      });
+    }
+  );
+}
+
+export {
+  getModelUrl,
+  getDownloadURLFromStorage,
+  getModelCategories,
+  uploadFileToStorage,
+};

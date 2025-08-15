@@ -6,6 +6,7 @@ import Hero from './componenets/hero/hero';
 import About from './componenets/about/about';
 import Publish from './componenets/publish/publish';
 import Services from "./componenets/services/services";
+import Test from "./componenets/demo/test";
 
 function App() {
   return (
@@ -26,7 +27,16 @@ function App() {
         {/* Publish model route */}
         <Route
           path="/publish/model"
-          element={<Publish />}
+          element={
+            <Layout>
+              <Publish />
+            </Layout>
+          }
+        />
+
+        <Route 
+          path="/test"
+          element=<Test />
         />
       </Routes>
     </Router>

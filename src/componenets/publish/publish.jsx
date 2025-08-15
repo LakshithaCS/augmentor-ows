@@ -9,11 +9,16 @@ import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import Autocomplete from "@mui/material/Autocomplete";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { googleLogout, useGoogleLogin } from "@react-oauth/google";
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import Chip from '@mui/material/Chip';
+
+import { useGoogleLogin } from "@react-oauth/google";
 
 import FileUpload from "../fileupload/fileupload";
 import ImageUpload from "../fileupload/imageupload";
 import { getModelCategories } from "../../util/Firebase";
+import { upload } from "../../util/UploadingHelper";
 import "./publish.css";
 
 var styles = {
@@ -63,15 +68,16 @@ function Publish() {
   const [categories, setCategories] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const [error, setError] = React.useState("Something Went Wrong!");
-  const [userProfile, setUserProfile] = React.useState({
-    sub: "",
-    name: "",
-    given_name: "",
-    family_name: "",
-    picture: "",
-    email: "",
-    email_verified: false,
-  });
+  const [submit, setSubmit] = React.useState(false);
+  const [openDialog, setOpenDialog] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpenDialog(true);
+  };
+
+  const handleClickClose = () => {
+    setOpenDialog(false);
+  };
 
   const login = useGoogleLogin({
     onSuccess: (tokenResponse) => {
@@ -85,18 +91,16 @@ function Publish() {
       })
         .then((res) => res.json())
         .then((user) => {
-          setUserProfile({...userProfile, user});
-          alert("Hello " + user.given_name + " " + user.family_name);
+          let url = user.picture;
+          let updatedUrl = url.replace(/=[^&]*/, "=s80");
+          user.picture = updatedUrl;
+          localStorage.clear();
           localStorage.setItem("GOOGLE_USER_INFO", JSON.stringify(user));
+          window.location.reload();
         });
     },
     onError: (error) => console.log("Login Failed:", error),
   });
-
-  const logOut = () => {
-    googleLogout();
-    localStorage.removeItem("GOOGLE_USER_INFO");
-  };
 
   const handleClick = () => {
     setOpen(true);
@@ -118,7 +122,11 @@ function Publish() {
     ) {
       setError("Please select the thumbnail and mark the price!");
       handleClick();
-    } else {
+    } 
+    else if(field === "preview") {
+      handleClickOpen();
+    }
+    else {
       setFormData((prev) => ({ ...prev, [field]: value }));
     }
   };
@@ -129,7 +137,9 @@ function Publish() {
 
   const handleSubmit = () => {
     console.log("Submitting form data:", formData);
-    login();
+    upload(formData);
+    setSubmit(true);
+    //login();
   };
 
   useEffect(() => {
@@ -145,12 +155,6 @@ function Publish() {
       }
     }
     fetchCategories();
-    const userinfo = localStorage.getItem("GOOGLE_USER_INFO");
-    if (userinfo && userinfo !== undefined) {
-      let temp = JSON.parse(userinfo);
-      setUserProfile({...userProfile, temp});
-      alert("Hello " + temp.given_name + " " + temp.family_name);
-    }
   }, []);
 
   function Error() {
@@ -180,7 +184,14 @@ function Publish() {
   }
 
   return (
-    <section className="container" style={{ minHeight: "100vh" }}>
+    <section
+      className="container"
+      style={{ Height: "100vh", paddingTop: "70px" }}
+    >
+      <PreviewDialog
+        open={openDialog}
+        onClose={handleClickClose}
+      />
       <Backdrop
         sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
         open={categories.length === 0}
@@ -207,6 +218,10 @@ function Publish() {
             sx={styles}
             value={formData.modelName}
             onChange={(e) => handleChange("modelName", e.target.value)}
+            helperText={
+              formData.modelName == "" && submit ? "Name cannot be empty" : ""
+            }
+            error={formData.modelName == "" && submit}
           />
         </div>
         <div className="col-sm-12 col-lg-6">
@@ -223,7 +238,16 @@ function Publish() {
             sx={styles}
             popupIcon={<ArrowDropDownIcon sx={{ color: "#fff" }} />}
             renderInput={(params) => (
-              <TextField {...params} label="Categorize Your Model" />
+              <TextField
+                {...params}
+                label="Categorize Your Model"
+                helperText={
+                  formData.category == "" && submit
+                    ? "Category cannot be empty"
+                    : ""
+                }
+                error={formData.category == "" && submit}
+              />
             )}
           />
         </div>
@@ -256,12 +280,14 @@ function Publish() {
       </div>
 
       <div className="row">
-        <div className="col-sm-12 col-lg-6" style={{ height: "350px" }}>
+        <div className="col-sm-12 col-lg-6" style={{ height: "300px" }}>
           <FileUpload
             heading={"3D Model File"}
             uploadButtonText={"CHOOSE FILE"}
             acceptFileType={".glb"}
             onFileSelect={(file) => handleFileChange("modelFile", file)}
+            helperText="3D model file cannot be empty"
+            error={formData.modelFile == null && submit}
           />
         </div>
         <div
@@ -280,7 +306,7 @@ function Publish() {
 
         <div
           className="col-sm-12 col-lg-6"
-          style={{ height: "350px" }}
+          style={{ height: "300px" }}
           hidden={!formData.syncAudio}
         >
           <FileUpload
@@ -288,6 +314,8 @@ function Publish() {
             uploadButtonText={"CHOOSE AUDIO FILE"}
             acceptFileType={"audio/*"}
             onFileSelect={(file) => handleFileChange("audioFile", file)}
+            helperText="Audio track cannot be empty"
+            error={formData.audioFile == null && submit}
           />
         </div>
 
@@ -296,6 +324,12 @@ function Publish() {
             <div className="row" hidden={formData.isFree}>
               <TextField
                 label="Mark Your Price"
+                helperText={
+                  formData.price == "" && !formData.isFree && submit
+                    ? "Price cannot be empty"
+                    : ""
+                }
+                error={formData.price == "" && !formData.isFree && submit}
                 variant="outlined"
                 sx={styles}
                 value={formData.price}
@@ -319,6 +353,18 @@ function Publish() {
             >
               <TextField
                 label="Your Client's AugmentoR Email Id"
+                helperText={
+                  formData.category?.toLowerCase() === "housing" &&
+                  submit &&
+                  formData.email == ""
+                    ? "Email id cannot be empty"
+                    : ""
+                }
+                error={
+                  formData.category?.toLowerCase() === "housing" &&
+                  submit &&
+                  formData.email == ""
+                }
                 variant="outlined"
                 sx={styles}
                 value={formData.email}
@@ -340,18 +386,26 @@ function Publish() {
       </div>
 
       <div className="row">
-        <div className="col-sm-12 col-lg-6" style={{ height: "280px" }}>
+        <div className="col-sm-12 col-lg-6" style={{ height: "285px" }}>
           <ImageUpload
             heading={"Select a Thumbnail"}
             uploadButtonText={"CHOOSE FILE"}
             acceptFileType={"image/*"}
             onFileSelect={(file) => handleFileChange("thumbnail", file)}
+            helperText="Thumbnail cannot be empty"
+            error={formData.thumbnail == null && submit}
           />
         </div>
         <div className="col-sm-12 col-lg-6" hidden={!formData.syncAudio}>
           <div className="row" hidden={formData.isFree}>
             <TextField
               label="Mark Your Price"
+              helperText={
+                formData.price == "" && !formData.isFree && submit
+                  ? "Price cannot be empty"
+                  : ""
+              }
+              error={formData.price == "" && !formData.isFree && submit}
               variant="outlined"
               sx={styles}
               value={formData.price}
@@ -376,6 +430,18 @@ function Publish() {
           >
             <TextField
               label="Your Client's AugmentoR Email Id"
+              helperText={
+                formData.category?.toLowerCase() === "housing" &&
+                submit &&
+                formData.email == ""
+                  ? "Email id cannot be empty"
+                  : ""
+              }
+              error={
+                formData.category?.toLowerCase() === "housing" &&
+                submit &&
+                formData.email == ""
+              }
               variant="outlined"
               sx={styles}
               value={formData.email}
@@ -402,6 +468,12 @@ function Publish() {
             <div className="row d-block d-lg-none">
               <TextField
                 label="Mark Your Price"
+                helperText={
+                  formData.price == "" && !formData.isFree && submit
+                    ? "Price cannot be empty"
+                    : ""
+                }
+                error={formData.price == "" && !formData.isFree && submit}
                 variant="outlined"
                 sx={styles}
                 value={formData.price}
@@ -425,6 +497,18 @@ function Publish() {
             <div className="row d-block d-lg-none">
               <TextField
                 label="Your Client's AugmentoR Email Id"
+                helperText={
+                  formData.category?.toLowerCase() === "housing" &&
+                  submit &&
+                  formData.email == ""
+                    ? "Email id cannot be empty"
+                    : ""
+                }
+                error={
+                  formData.category?.toLowerCase() === "housing" &&
+                  submit &&
+                  formData.email == ""
+                }
                 variant="outlined"
                 sx={styles}
                 value={formData.email}
@@ -470,5 +554,24 @@ function Publish() {
     </section>
   );
 }
+
+
+
+function PreviewDialog(props) {
+  const { onClose, open } = props;
+
+  const handleClose = () => {
+    onClose();
+  };
+
+  return (
+    <Dialog onClose={handleClose} open={open}>
+      <DialogTitle>
+        <Chip label="FREE" color="primary" variant="outlined" />
+      </DialogTitle>
+    </Dialog>
+  );
+}
+
 
 export default Publish;

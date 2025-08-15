@@ -2,7 +2,13 @@ import React, { useState } from "react";
 import { Box, Typography, IconButton } from "@mui/material";
 import ImageIcon from "@mui/icons-material/Image";
 
-const ImageUpload = ({ heading, acceptFileType, onFileSelect }) => {
+const ImageUpload = ({
+  heading,
+  acceptFileType,
+  onFileSelect,
+  helperText,
+  error,
+}) => {
   const [file, setFile] = useState(null);
 
   const handleFileChange = (event) => {
@@ -19,7 +25,9 @@ const ImageUpload = ({ heading, acceptFileType, onFileSelect }) => {
         width: "80%",
         height: "80%",
         margin: "2% 10% 10% 10%",
-        border: "1px solid rgba(255, 255, 255, 0.1)",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderColor: error ? "#d32f2f" : "rgba(255, 255, 255, 0.1)",
         borderRadius: "12px",
         display: "flex",
         flexDirection: "column",
@@ -27,7 +35,7 @@ const ImageUpload = ({ heading, acceptFileType, onFileSelect }) => {
         p: 2,
         background: "rgba(255, 255, 255, 0.05)",
         backdropFilter: "blur(10px)",
-        transformStyle: "preserve-3d"
+        transformStyle: "preserve-3d",
       }}
     >
       {/* Heading */}
@@ -47,7 +55,7 @@ const ImageUpload = ({ heading, acceptFileType, onFileSelect }) => {
           display: "flex",
           justifyContent: "flex-start", // Left align
           alignItems: "center", // Vertically center
-          margin: 0
+          margin: 0,
         }}
       >
         <label htmlFor="file-upload">
@@ -73,10 +81,16 @@ const ImageUpload = ({ heading, acceptFileType, onFileSelect }) => {
                 p: 0,
               }}
             >
-              <ImageIcon sx={{ fontSize: 150, color: "rgba(0, 213, 255, 0.37)" }} />
+              <ImageIcon
+                sx={{ fontSize: 150, color: "rgba(0, 213, 255, 0.37)" }}
+              />
             </IconButton>
+            
           )}
         </label>
+        {error && (
+                  <Typography sx={{ mt: 1, color: "#d32f2f" }}>{helperText}</Typography>
+                )}
         <input
           id="file-upload"
           type="file"

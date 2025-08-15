@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import "./fileupload.css";
 
-const FileUpload = ({ heading, uploadButtonText, acceptFileType, onFileSelect}) => {
+const FileUpload = ({
+  heading,
+  uploadButtonText,
+  acceptFileType,
+  onFileSelect,
+  helperText,
+  error,
+}) => {
   const [fileName, setFileName] = useState("");
 
   const handleFileChange = (event) => {
@@ -17,7 +24,9 @@ const FileUpload = ({ heading, uploadButtonText, acceptFileType, onFileSelect}) 
         width: "80%",
         height: "80%",
         margin: "2% 10% 10% 10%",
-        border: "1px solid rgba(255, 255, 255, 0.1)",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderColor: error ? "#d32f2f" : "rgba(255, 255, 255, 0.1)",
         borderRadius: "12px",
         display: "flex",
         flexDirection: "column",
@@ -25,13 +34,19 @@ const FileUpload = ({ heading, uploadButtonText, acceptFileType, onFileSelect}) 
         p: 2,
         background: "rgba(255, 255, 255, 0.05)",
         backdropFilter: "blur(10px)",
-        transformStyle: "preserve-3d"
+        transformStyle: "preserve-3d",
       }}
     >
       {/* Heading */}
       <Typography
         variant="h6"
-        sx={{ position: "absolute", top: "10px", left: "15px", fontSize: "20px", color: "#fff"}}
+        sx={{
+          position: "absolute",
+          top: "10px",
+          left: "15px",
+          fontSize: "20px",
+          color: "#fff",
+        }}
       >
         {heading}
       </Typography>
@@ -50,7 +65,11 @@ const FileUpload = ({ heading, uploadButtonText, acceptFileType, onFileSelect}) 
         <Button
           variant="contained"
           component="label"
-          sx={{ height: "50px", borderRadius: "50px", background: "rgba(0, 213, 255, 0.37)" }}
+          sx={{
+            height: "50px",
+            borderRadius: "50px",
+            background: "rgba(0, 213, 255, 0.37)",
+          }}
         >
           {uploadButtonText}
           <input
@@ -64,6 +83,9 @@ const FileUpload = ({ heading, uploadButtonText, acceptFileType, onFileSelect}) 
           <Typography variant="body2" sx={{ mt: 1, color: "#fff" }}>
             filename: {fileName}
           </Typography>
+        )}
+        {error && (
+          <Typography sx={{ mt: 1, color: "#d32f2f" }}>{helperText}</Typography>
         )}
       </Box>
     </Box>

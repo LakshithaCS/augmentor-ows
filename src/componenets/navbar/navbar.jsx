@@ -1,43 +1,146 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { googleLogout } from "@react-oauth/google";
+
 import "./navbar.css";
 
 function Navbar() {
-    const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [userProfile, setUserProfile] = useState({
+    sub: "",
+    name: "",
+    given_name: "",
+    family_name: "",
+    picture: "",
+    email: "",
+    email_verified: false,
+  });
 
-    const toggleMenu = () => {
-        setIsOpen(!isOpen);
-    };
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
 
-    const closeMenu = () => {
-        setIsOpen(false); // Close menu when a link is clicked (optional)
-    };
+  const closeMenu = () => {
+    setIsOpen(false); // Close menu when a link is clicked (optional)
+  };
 
-    return (
-        <nav className="navbar">
-            <div className="nav-container">
-                <div className="brand">
-                    <img src="/images/logo.png" alt="Logo" className="logo-img" />
-                    <div className="logo-text">AugmentoR</div>
-                </div>
+  const logOut = () => {
+    handleClose();
+    googleLogout();
+    localStorage.removeItem("GOOGLE_USER_INFO");
+    window.location.reload();
+  };
 
-                {/* Navigation Links */}
-                <ul className={`nav-links ${isOpen ? "active" : ""}`}>
-                    <li><a href="#home" onClick={closeMenu}>Home</a></li>
-                    <li><a href="#about" onClick={closeMenu}>About</a></li>
-                    <li><a href="#services" onClick={closeMenu}>Services</a></li>
-                    <li><a href="/publish/model" target="_blank" rel="noopener noreferrer" onClick={closeMenu}>Models</a></li>
-                    <li><a href="#contact" onClick={closeMenu}>Contact</a></li>
-                </ul>
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
-                {/* Hamburger Icon */}
-                <div className={`hamburger ${isOpen ? "open" : ""}`} onClick={toggleMenu}>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
+  useEffect(() => {
+    const userinfo = localStorage.getItem("GOOGLE_USER_INFO");
+
+    if (userinfo && userinfo !== undefined) {
+      let user = JSON.parse(userinfo);
+      console.log(user);
+      setUserProfile(user);
+    }
+  }, []);
+
+  return (
+    <nav className="navbar">
+      <div className="nav-container">
+        <div className="brand">
+          <img src="/images/logo.png" alt="Logo" className="logo-img" />
+          <div className="logo-text">AugmentoR</div>
+        </div>
+
+        {/* Navigation Links */}
+        <ul className={`nav-links ${isOpen ? "active" : ""}`}>
+          <li>
+            <a href="/#home" onClick={closeMenu}>
+              Home
+            </a>
+          </li>
+          <li>
+            <a href="/#about" onClick={closeMenu}>
+              About
+            </a>
+          </li>
+          <li>
+            <a href="/#services" onClick={closeMenu}>
+              Services
+            </a>
+          </li>
+          <li>
+            <a href="/publish/model" onClick={closeMenu}>
+              Models
+            </a>
+          </li>
+          <li>
+            <a href="/#contact" onClick={closeMenu}>
+              Contact
+            </a>
+          </li>
+        </ul>
+
+        {/* Hamburger Icon */}
+        <div
+          className={`hamburger ${isOpen ? "open" : ""}`}
+          onClick={toggleMenu}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+      <div className="profile">
+        {!userProfile.picture == "" && (
+          <>
+            <div className="row">
+              <div className="col-3">
+                <Avatar alt={userProfile.name} src={userProfile.picture} />
+              </div>
+              <div className="col-2">
+                <Button
+                  id="basic-button"
+                  aria-controls={open ? "basic-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? "true" : undefined}
+                  onClick={handleClick}
+                >
+                  <ArrowDropDownIcon />
+                </Button>
+                <Menu
+                  id="basic-menu"
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  slotProps={{
+                    list: {
+                      "aria-labelledby": "basic-button",
+                    },
+                  }}
+                >
+                  <div style={{ padding: "10px" }}>
+                    <h5>{userProfile.name}</h5>
+                    <MenuItem onClick={logOut}>Logout</MenuItem>
+                  </div>
+                </Menu>
+              </div>
             </div>
-        </nav>
-    );
+          </>
+        )}
+      </div>
+    </nav>
+  );
 }
 
 export default Navbar;
