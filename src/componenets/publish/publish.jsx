@@ -9,9 +9,9 @@ import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import Autocomplete from "@mui/material/Autocomplete";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import DialogTitle from '@mui/material/DialogTitle';
-import Dialog from '@mui/material/Dialog';
-import Chip from '@mui/material/Chip';
+import DialogTitle from "@mui/material/DialogTitle";
+import Dialog from "@mui/material/Dialog";
+import Chip from "@mui/material/Chip";
 
 import { useGoogleLogin } from "@react-oauth/google";
 
@@ -79,27 +79,34 @@ function Publish() {
     setOpenDialog(false);
   };
 
-  const login = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
-      console.log("Access Token:", tokenResponse.access_token);
+  const loginAndUpload = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        // Get user info
+        const res = await fetch(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: {
+              Authorization: `Bearer ${tokenResponse.access_token}`,
+            },
+          }
+        );
+        const user = await res.json();
 
-      // Optional: Fetch user info from Google API using access token
-      fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-        headers: {
-          Authorization: `Bearer ${tokenResponse.access_token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((user) => {
-          let url = user.picture;
-          let updatedUrl = url.replace(/=[^&]*/, "=s80");
-          user.picture = updatedUrl;
-          localStorage.clear();
-          localStorage.setItem("GOOGLE_USER_INFO", JSON.stringify(user));
-          window.location.reload();
-        });
+        // Update profile picture size
+        user.picture = user.picture.replace(/=[^&]*/, "=s80");
+
+        // Store user in localStorage
+        localStorage.setItem("GOOGLE_USER_INFO", JSON.stringify(user));
+
+        // ✅ After login success, continue with your flow
+        await upload(formData, user.sub);
+        setSubmit(true);
+      } catch (err) {
+        console.error("Error during login flow:", err);
+      }
     },
-    onError: (error) => console.log("Login Failed:", error),
+    onError: (error) => console.error("Login Failed:", error),
   });
 
   const handleClick = () => {
@@ -122,11 +129,9 @@ function Publish() {
     ) {
       setError("Please select the thumbnail and mark the price!");
       handleClick();
-    } 
-    else if(field === "preview") {
+    } else if (field === "preview") {
       handleClickOpen();
-    }
-    else {
+    } else {
       setFormData((prev) => ({ ...prev, [field]: value }));
     }
   };
@@ -135,11 +140,15 @@ function Publish() {
     setFormData((prev) => ({ ...prev, [field]: file }));
   };
 
-  const handleSubmit = () => {
-    console.log("Submitting form data:", formData);
-    upload(formData);
-    setSubmit(true);
-    //login();
+  const handleSubmit = async () => {
+    const userinfo = localStorage.getItem("GOOGLE_USER_INFO");
+    if (userinfo && userinfo !== undefined) {
+      let user = JSON.parse(userinfo);
+      await upload(formData, user.sub);
+      setSubmit(true);
+    } else {
+      loginAndUpload();
+    }
   };
 
   useEffect(() => {
@@ -188,10 +197,7 @@ function Publish() {
       className="container"
       style={{ Height: "100vh", paddingTop: "70px" }}
     >
-      <PreviewDialog
-        open={openDialog}
-        onClose={handleClickClose}
-      />
+      <PreviewDialog open={openDialog} onClose={handleClickClose} />
       <Backdrop
         sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
         open={categories.length === 0}
@@ -555,8 +561,6 @@ function Publish() {
   );
 }
 
-
-
 function PreviewDialog(props) {
   const { onClose, open } = props;
 
@@ -572,6 +576,5 @@ function PreviewDialog(props) {
     </Dialog>
   );
 }
-
 
 export default Publish;
