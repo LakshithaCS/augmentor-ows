@@ -1,12 +1,13 @@
-import { ref as dbRef, get } from "firebase/database";
+import { ref as dbRef, get, getDatabase, push, set } from "firebase/database";
 import {
   ref as storageRef,
   getDownloadURL,
   uploadBytesResumable,
+  getStorage,
+  deleteObject
 } from "firebase/storage";
-import { getDatabase } from "firebase/database";
-import { getStorage } from "firebase/storage";
 import { initializeApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -23,6 +24,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const storage = getStorage(app);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
 async function getModelCategories() {
   try {
@@ -67,7 +70,7 @@ async function getDownloadURLFromStorage(path) {
   }
 }
 
-async function uploadFileToStorage(file, path) {
+async function uploadFileToStorage(file, path, setUploadProgress) {
   const fileref = storageRef(storage, path);
   const uploadTask = uploadBytesResumable(fileref, file);
 
@@ -77,10 +80,9 @@ async function uploadFileToStorage(file, path) {
       (snapshot) => {
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload is " + progress + "% done");
+        setUploadProgress(progress);
       },
       (error) => {
-        console.error("Upload failed:", error);
         reject(error);
       },
       async () => {
@@ -95,9 +97,39 @@ async function uploadFileToStorage(file, path) {
   });
 }
 
+
+function deleteFileFromStorage(path) {
+  const fileref = storageRef(storage, path);
+
+  deleteObject(fileref).catch((error) => {
+    console.error("Error deleting file:", error);
+  });
+}
+
+
+async function pushModelDataToRealTimeDatabase(basePath, jsonData) {
+  const baseRef = dbRef(database, basePath);
+
+  // Generate unique ID without writing data yet
+  const newChildRef = push(baseRef); 
+  const uniqueId = newChildRef.key; // This is your unique ID
+
+  try {
+    // Now upload data to that child node
+    await set(newChildRef, jsonData);
+    return uniqueId; // Return the unique ID used
+  } catch (err) {
+    throw err;
+  }
+}
+
 export {
   getModelUrl,
   getDownloadURLFromStorage,
   getModelCategories,
   uploadFileToStorage,
+  deleteFileFromStorage,
+  pushModelDataToRealTimeDatabase,
+  auth,
+  googleProvider
 };

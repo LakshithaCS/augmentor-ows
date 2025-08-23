@@ -62,8 +62,29 @@ function Navbar() {
           <div className="logo-text">AugmentoR</div>
         </div>
 
-        {/* Navigation Links */}
         <ul className={`nav-links ${isOpen ? "active" : ""}`}>
+          <li
+            style={{
+              margin: "30px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              paddingLeft: "0px"
+            }}
+            className="d-flex d-lg-none"
+          >
+            <div>
+              <span
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "16px",
+                  color: "#4CAF50",
+                }}
+              >
+                Hi, {userProfile.name}
+              </span>
+            </div>
+          </li>
           <li>
             <a href="/#home" onClick={closeMenu}>
               Home
@@ -101,12 +122,12 @@ function Navbar() {
           <span></span>
         </div>
       </div>
-      <div className="profile">
-        {!userProfile.picture == "" && (
+      <div className="profile d-none d-lg-block">
+        {!userProfile.photo == "" && (
           <>
             <div className="row">
               <div className="col-3">
-                <Avatar alt={userProfile.name} src={userProfile.picture} />
+                <Avatar alt={userProfile.name} src={userProfile.photo} />
               </div>
               <div className="col-2">
                 <Button

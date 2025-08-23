@@ -1,11 +1,22 @@
-import { uploadFileToStorage } from "./Firebase";
+import {
+  uploadFileToStorage,
+  deleteFileFromStorage,
+  pushModelDataToRealTimeDatabase,
+} from "./Firebase";
 
-async function upload(formData, userId) {
+async function upload(
+  epochMillis,
+  formData,
+  userId,
+  setUploadProgress,
+  setUploadLabel,
+  setError,
+  setErrorMessage
+) {
   const thumbnail = formData.thumbnail;
   const audio = formData.audioFile;
   const model = formData.modelFile;
-
-  const epochMillis = Date.now();
+  const model_name = formData.modelName;
 
   let model_file_name = epochMillis + ".glb";
 
@@ -21,20 +32,91 @@ async function upload(formData, userId) {
     audio_file_name = "audio_" + epochMillis + "." + ext;
   }
 
-  const modelPath = `/Models/${userId}/${epochMillis}/${model_file_name}`;
-  const audioPath = `/Models/${userId}/${epochMillis}/${audio_file_name}`;
-  const thumnailPath = `/Models/${userId}/${epochMillis}/${thumbnail_file_name}`;
+  const base_path = `/Models/${userId}/${epochMillis}_${model_name}`;
+  const modelPath = `${base_path}/${model_file_name.replace(/\s/g, "_")}`;
+  const audioPath = `${base_path}/${audio_file_name}`;
+  const thumnailPath = `${base_path}/${thumbnail_file_name}`;
 
-  let modelDownloadUrl = await uploadFileToStorage(model, modelPath);
-  console.log("model is uploaded successfully : " + modelDownloadUrl);
+  let downloadUrls = {
+    model: "",
+    audio: "",
+    thumbnail: "",
+  };
+  let failed = false; // flag
 
-  if (audio?.name) {
-    let audioDownloadUrl = await uploadFileToStorage(audio, audioPath);
-    console.log("audio is uploaded successfully : " + audioDownloadUrl);
+  try {
+    setUploadLabel("Uploading Model File.......");
+    let modelDownloadUrl = await uploadFileToStorage(
+      model,
+      modelPath,
+      setUploadProgress,
+      setError,
+      setErrorMessage
+    );
+    downloadUrls["model"] = modelDownloadUrl;
+  } catch (e) {
+    failed = true;
+    setError(true);
+    setErrorMessage("FAILED TO UPLOAD MODEL FILE, TRY AGAIN!");
   }
 
-  let thumbnailDownloadUrl = await uploadFileToStorage(thumbnail, thumnailPath);
-  console.log("thumbnail is uploaded successfully : " + thumbnailDownloadUrl);
+  if (failed) return downloadUrls;
+
+  if (audio?.name) {
+    try {
+      setUploadLabel("Uploading Aduio File.......");
+      let audioDownloadUrl = await uploadFileToStorage(
+        audio,
+        audioPath,
+        setUploadProgress,
+        setError,
+        setErrorMessage
+      );
+      downloadUrls["audio"] = audioDownloadUrl;
+    } catch (e) {
+      failed = true;
+      setError(true);
+      setErrorMessage("FAILED TO UPLOAD MODEL FILE, TRY AGAIN!");
+      deleteFileFromStorage(modelPath);
+    }
+  }
+
+  if (failed) return downloadUrls;
+
+  try {
+    setUploadLabel("Uploading Thumbnail File.......");
+    let thumbnailDownloadUrl = await uploadFileToStorage(
+      thumbnail,
+      thumnailPath,
+      setUploadProgress,
+      setError,
+      setErrorMessage
+    );
+    downloadUrls["thumbnail"] = thumbnailDownloadUrl;
+  } catch (e) {
+    failed = true;
+    setError(true);
+    setErrorMessage("FAILED TO UPLOAD MODEL FILE, TRY AGAIN!");
+    deleteFileFromStorage(modelPath);
+    if (audio?.name) {
+      deleteFileFromStorage(audioPath);
+    }
+  }
+
+  return downloadUrls;
 }
 
-export { upload };
+async function push(data, userId, setUploadLabel, setError, setErrorMessage) {
+  const bashPath = `/ForReview/FileSubmission/${userId}`;
+  try {
+    setUploadLabel("Pushing Data Into Real Time Database.......");
+    await pushModelDataToRealTimeDatabase(bashPath, data);
+    return true;
+  } catch (e) {
+    setError(true);
+    setErrorMessage("FAILED TO PUSH MODE DATA INTO DB, TRY AGAIN!");
+    return false;
+  }
+}
+
+export { upload, push };

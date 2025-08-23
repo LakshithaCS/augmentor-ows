@@ -12,13 +12,16 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
 import Chip from "@mui/material/Chip";
-
-import { useGoogleLogin } from "@react-oauth/google";
+import { signInWithPopup } from "firebase/auth";
 
 import FileUpload from "../fileupload/fileupload";
 import ImageUpload from "../fileupload/imageupload";
 import { getModelCategories } from "../../util/Firebase";
-import { upload } from "../../util/UploadingHelper";
+import { upload, push } from "../../util/UploadingHelper";
+import UploadDialog from "./upload/upload";
+import ErrorDialog from "../error/error";
+import SuccessDialog from "../success/success";
+import { auth, googleProvider } from "../../util/Firebase";
 import "./publish.css";
 
 var styles = {
@@ -51,6 +54,12 @@ var styles = {
   },
 };
 
+function isPositiveNumber(str) {
+  const num = Number(str);
+  if (Number.isNaN(num)) return false; // not a number
+  return num > 0; // only true if greater than 0
+}
+
 function Publish() {
   const [formData, setFormData] = useState({
     modelName: "",
@@ -67,9 +76,20 @@ function Publish() {
 
   const [categories, setCategories] = React.useState([]);
   const [open, setOpen] = React.useState(false);
-  const [error, setError] = React.useState("Something Went Wrong!");
   const [submit, setSubmit] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
+  const [uploadOpen, setUploadOpen] = React.useState(false);
+  const [uploadProgress, setUploadProgress] = React.useState(0);
+  const [uploadLabel, setUploadLabel] = React.useState("Please Wait..........");
+
+  const [errorMessage, setErrorMessage] = React.useState(
+    "ERROR OCCURRED, PLEASE TRY AGAIN!"
+  );
+  const [successMessage, setSuccessMessage] = React.useState(
+    "SUCCESSFULLY COMPLETED!"
+  );
+  const [error, setError] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpenDialog(true);
@@ -79,35 +99,31 @@ function Publish() {
     setOpenDialog(false);
   };
 
-  const loginAndUpload = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      try {
-        // Get user info
-        const res = await fetch(
-          "https://www.googleapis.com/oauth2/v3/userinfo",
-          {
-            headers: {
-              Authorization: `Bearer ${tokenResponse.access_token}`,
-            },
-          }
-        );
-        const user = await res.json();
+  const loginAndUpload = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
 
-        // Update profile picture size
-        user.picture = user.picture.replace(/=[^&]*/, "=s80");
+      let user = result.user;
+      let photo = user.photoURL;
+      let email = user.email;
+      let uid = user.uid;
+      let name = user.displayName;
 
-        // Store user in localStorage
-        localStorage.setItem("GOOGLE_USER_INFO", JSON.stringify(user));
+      const userData = {
+        photo,
+        email,
+        uid,
+        name,
+      };
 
-        // ✅ After login success, continue with your flow
-        await upload(formData, user.sub);
-        setSubmit(true);
-      } catch (err) {
-        console.error("Error during login flow:", err);
-      }
-    },
-    onError: (error) => console.error("Login Failed:", error),
-  });
+      localStorage.setItem("GOOGLE_USER_INFO", JSON.stringify(userData));
+
+      await uploadToStorage(userData);
+    } catch (error) {
+      setErrorMessage("FAILED TO LOG IN");
+      setError(true);
+    }
+  };
 
   const handleClick = () => {
     setOpen(true);
@@ -127,7 +143,8 @@ function Publish() {
       value &&
       (formData.thumbnail === null || formData.price === "")
     ) {
-      setError("Please select the thumbnail and mark the price!");
+      setErrorMessage("PLEASE SELECT THE THUMBNAIL AND MARK THE PRICE!");
+      setError(true);
       handleClick();
     } else if (field === "preview") {
       handleClickOpen();
@@ -140,14 +157,69 @@ function Publish() {
     setFormData((prev) => ({ ...prev, [field]: file }));
   };
 
+  const uploadToStorage = async (user) => {
+    const epochMillis = Date.now();
+
+    const downloadUrls = await upload(
+      epochMillis,
+      formData,
+      user.uid,
+      setUploadProgress,
+      setUploadLabel,
+      setError,
+      setErrorMessage
+    );
+
+    await uploadToRealTimeDatabase(downloadUrls, user, epochMillis);
+    if (!error) {
+      setSuccessMessage("UPLOADING SUCCESS");
+      setSuccess(true);
+    }
+  };
+
+  const uploadToRealTimeDatabase = async (downloadUrls, user, epochMillis) => {
+    const modelData = {
+      createdBy: user.name,
+      creatorEmail: user.email,
+      category: formData.category,
+      isNew: false,
+      modelUrl: downloadUrls.model,
+      audioUrl: downloadUrls.audio,
+      thumbnailUrl: downloadUrls.thumbnail,
+      nameOfTheModel: formData.modelName,
+      postedDate: epochMillis,
+      markPrice: formData.isFree ? "0.0" : formData.price,
+      clientEmail: formData.email,
+      isPublishedForFree: formData.isFree,
+      paymentStatus: "pending",
+      audioLink: "",
+      modelLink: "",
+    };
+    await push(modelData, user.uid, setUploadLabel, setError, setErrorMessage);
+  };
+
   const handleSubmit = async () => {
-    const userinfo = localStorage.getItem("GOOGLE_USER_INFO");
-    if (userinfo && userinfo !== undefined) {
-      let user = JSON.parse(userinfo);
-      await upload(formData, user.sub);
-      setSubmit(true);
-    } else {
-      loginAndUpload();
+    setSubmit(true);
+    const valid =
+      formData.modelName.length > 0 &&
+      formData.modelFile != null &&
+      formData.category.length > 0 &&
+      formData.thumbnail != null &&
+      (formData.syncAudio === false || formData.audioFile != null) &&
+      (formData.isFree === true || isPositiveNumber(formData.price.length)) &&
+      (formData.category.length == 0 ||
+        formData.category !== "Housing" ||
+        formData.email.length > 0);
+
+    if (valid) {
+      setUploadOpen(true);
+      const userinfo = localStorage.getItem("GOOGLE_USER_INFO");
+      if (userinfo && userinfo !== undefined) {
+        let user = JSON.parse(userinfo);
+        await uploadToStorage(user);
+      } else {
+        loginAndUpload();
+      }
     }
   };
 
@@ -166,37 +238,19 @@ function Publish() {
     fetchCategories();
   }, []);
 
-  function Error() {
-    return (
-      <Snackbar
-        open={open}
-        autoHideDuration={3000}
-        onClose={handleClose}
-        message={
-          <span style={{ color: "#fff", fontWeight: "bold" }}>{error}</span>
-        }
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        ContentProps={{
-          sx: {
-            backgroundColor: "#d32f2f", // darker red
-            color: "#fff",
-            fontSize: "15px",
-            borderRadius: "8px",
-            padding: "10px 16px",
-            fontFamily: "'Roboto', 'Helvetica Neue', Arial, sans-serif", // Clean & standard
-            fontWeight: 600, // Adds emphasis for error
-            letterSpacing: "0.5px", // Slight spacing for readability
-          },
-        }}
-      />
-    );
-  }
-
   return (
     <section
       className="container"
       style={{ Height: "100vh", paddingTop: "70px" }}
     >
+      <ErrorDialog open={error} msg={errorMessage} onClose={() => setError(false)}/>
+      <SuccessDialog open={success} msg={successMessage} onClose={() => setSuccess(false)}/>
+      <UploadDialog
+        open={uploadOpen}
+        onClose={() => console.log("close")}
+        progress={uploadProgress}
+        label={uploadLabel}
+      />
       <PreviewDialog open={openDialog} onClose={handleClickClose} />
       <Backdrop
         sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
@@ -215,7 +269,6 @@ function Publish() {
           sx={{ "svg circle": { stroke: "url(#my_gradient)" } }}
         />
       </Backdrop>
-      <Error />
       <div className="row" style={{ paddingTop: "50px" }}>
         <div className="col-sm-12 col-lg-6">
           <TextField
@@ -331,8 +384,8 @@ function Publish() {
               <TextField
                 label="Mark Your Price"
                 helperText={
-                  formData.price == "" && !formData.isFree && submit
-                    ? "Price cannot be empty"
+                  isPositiveNumber(formData.price) && !formData.isFree && submit
+                    ? "Price cannot be empty or zero"
                     : ""
                 }
                 error={formData.price == "" && !formData.isFree && submit}
@@ -407,8 +460,8 @@ function Publish() {
             <TextField
               label="Mark Your Price"
               helperText={
-                formData.price == "" && !formData.isFree && submit
-                  ? "Price cannot be empty"
+                isPositiveNumber(formData.price) && !formData.isFree && submit
+                  ? "Price cannot be empty or zero"
                   : ""
               }
               error={formData.price == "" && !formData.isFree && submit}
@@ -475,8 +528,8 @@ function Publish() {
               <TextField
                 label="Mark Your Price"
                 helperText={
-                  formData.price == "" && !formData.isFree && submit
-                    ? "Price cannot be empty"
+                  isPositiveNumber(formData.price) && !formData.isFree && submit
+                    ? "Price cannot be empty or zero"
                     : ""
                 }
                 error={formData.price == "" && !formData.isFree && submit}

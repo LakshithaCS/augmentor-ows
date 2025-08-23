@@ -131,9 +131,11 @@
         height: calc(100vh - 70px);
         background: rgba(0, 0, 0, 0.95);
         flex-direction: column;
-        justify-content: center;
-        align-items: center;
         transition: right 0.3s ease;
+    }
+
+    .nav-links li {
+        padding-left: 30px;
     }
 
     .nav-container {
