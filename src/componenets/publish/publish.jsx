@@ -77,7 +77,6 @@ function Publish() {
   const [categories, setCategories] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const [submit, setSubmit] = React.useState(false);
-  const [openDialog, setOpenDialog] = React.useState(false);
   const [uploadOpen, setUploadOpen] = React.useState(false);
   const [uploadProgress, setUploadProgress] = React.useState(0);
   const [uploadLabel, setUploadLabel] = React.useState("Please Wait..........");
@@ -90,14 +89,6 @@ function Publish() {
   );
   const [error, setError] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpenDialog(true);
-  };
-
-  const handleClickClose = () => {
-    setOpenDialog(false);
-  };
 
   const loginAndUpload = async () => {
     try {
@@ -146,8 +137,12 @@ function Publish() {
       setErrorMessage("PLEASE SELECT THE THUMBNAIL AND MARK THE PRICE!");
       setError(true);
       handleClick();
-    } else if (field === "preview") {
-      handleClickOpen();
+    } else if (field == "isFree") {
+      if (value) {
+        setFormData((prev) => ({ ...prev, ["price"]: "" }));
+        setFormData((prev) => ({ ...prev, ["preview"]: false }));
+      }
+      setFormData((prev) => ({ ...prev, [field]: value }));
     } else {
       setFormData((prev) => ({ ...prev, [field]: value }));
     }
@@ -181,7 +176,6 @@ function Publish() {
       setSuccessMessage("UPLOADING SUCCESS");
       setSuccess(true);
     }
-    
   };
 
   const uploadToRealTimeDatabase = async (downloadUrls, user, epochMillis) => {
@@ -266,7 +260,6 @@ function Publish() {
         progress={uploadProgress}
         label={uploadLabel}
       />
-      <PreviewDialog open={openDialog} onClose={handleClickClose} />
       <Backdrop
         sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
         open={categories.length === 0}
@@ -354,7 +347,12 @@ function Publish() {
       </div>
 
       <div className="row">
-        <div className="col-sm-12 col-lg-6" style={{ height: "300px" }}>
+        <div
+          className="col-sm-12 col-lg-6"
+          style={{
+            height: !formData.syncAudio && formData.preview ? "480px" : "300px",
+          }}
+        >
           <FileUpload
             heading={"3D Model File"}
             uploadButtonText={"CHOOSE FILE"}
@@ -455,6 +453,22 @@ function Publish() {
                 />
               </h5>
             </div>
+            {formData.preview && (
+              <div class="image-container" style={styles}>
+                <img
+                  src={URL.createObjectURL(formData.thumbnail)}
+                  alt="Bottom Image"
+                  class="bottom-img"
+                />
+                {(formData.isFree || !isPositiveNumber(formData.price)) && (
+                  <img
+                    src="/images/ribbon.png"
+                    alt="Top Image"
+                    class="top-img"
+                  />
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -533,6 +547,18 @@ function Publish() {
               />
             </h5>
           </div>
+          {formData.preview && (
+            <div class="image-container" style={styles}>
+              <img
+                src={URL.createObjectURL(formData.thumbnail)}
+                alt="Bottom Image"
+                class="bottom-img"
+              />
+              {(formData.isFree || !isPositiveNumber(formData.price)) && (
+                <img src="/images/ribbon.png" alt="Top Image" class="top-img" />
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -600,6 +626,23 @@ function Publish() {
                 color="default"
               />
             </h5>
+
+            {formData.preview && (
+              <div class="image-container" style={styles}>
+                <img
+                  src={URL.createObjectURL(formData.thumbnail)}
+                  alt="Bottom Image"
+                  class="bottom-img"
+                />
+                {(formData.isFree || !isPositiveNumber(formData.price)) && (
+                  <img
+                    src="/images/ribbon.png"
+                    alt="Top Image"
+                    class="top-img"
+                  />
+                )}
+              </div>
+            )}
           </div>
         </>
       )}
@@ -626,22 +669,6 @@ function Publish() {
         </div>
       </div>
     </section>
-  );
-}
-
-function PreviewDialog(props) {
-  const { onClose, open } = props;
-
-  const handleClose = () => {
-    onClose();
-  };
-
-  return (
-    <Dialog onClose={handleClose} open={open}>
-      <DialogTitle>
-        <Chip label="FREE" color="primary" variant="outlined" />
-      </DialogTitle>
-    </Dialog>
   );
 }
 
