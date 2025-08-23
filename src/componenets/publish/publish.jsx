@@ -160,22 +160,28 @@ function Publish() {
   const uploadToStorage = async (user) => {
     const epochMillis = Date.now();
 
-    const downloadUrls = await upload(
-      epochMillis,
-      formData,
-      user.uid,
-      setUploadProgress,
-      setUploadLabel,
-      setError,
-      setErrorMessage
-    );
+    try {
+      const downloadUrls = await upload(
+        epochMillis,
+        formData,
+        user.uid,
+        setUploadProgress,
+        setUploadLabel,
+        setError,
+        setErrorMessage
+      );
 
-    await uploadToRealTimeDatabase(downloadUrls, user, epochMillis);
+      await uploadToRealTimeDatabase(downloadUrls, user, epochMillis);
+    } catch (e) {
+      console.log(e);
+    }
+
+    setUploadOpen(false);
     if (!error) {
       setSuccessMessage("UPLOADING SUCCESS");
       setSuccess(true);
     }
-    uploadOpen(false);
+    
   };
 
   const uploadToRealTimeDatabase = async (downloadUrls, user, epochMillis) => {
@@ -244,11 +250,19 @@ function Publish() {
       className="container"
       style={{ Height: "100vh", paddingTop: "70px" }}
     >
-      <ErrorDialog open={error} msg={errorMessage} onClose={() => setError(false)}/>
-      <SuccessDialog open={success} msg={successMessage} onClose={() => setSuccess(false)}/>
+      <ErrorDialog
+        open={error}
+        msg={errorMessage}
+        onClose={() => setError(false)}
+      />
+      <SuccessDialog
+        open={success}
+        msg={successMessage}
+        onClose={() => setSuccess(false)}
+      />
       <UploadDialog
         open={uploadOpen && (!error || !success)}
-        onClose={() => setUploadOpen(false)}
+        onClose={() => {}}
         progress={uploadProgress}
         label={uploadLabel}
       />

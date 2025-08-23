@@ -150,7 +150,7 @@
 
     .logout-item {
         position: absolute;
-        bottom: 50px;
+        bottom: 100px;
         /* distance from bottom of screen */
         width: calc(100% - 40px);
         /* full width minus padding */
