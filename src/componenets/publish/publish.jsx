@@ -175,6 +175,7 @@ function Publish() {
       setSuccessMessage("UPLOADING SUCCESS");
       setSuccess(true);
     }
+    uploadOpen(false);
   };
 
   const uploadToRealTimeDatabase = async (downloadUrls, user, epochMillis) => {
@@ -246,8 +247,8 @@ function Publish() {
       <ErrorDialog open={error} msg={errorMessage} onClose={() => setError(false)}/>
       <SuccessDialog open={success} msg={successMessage} onClose={() => setSuccess(false)}/>
       <UploadDialog
-        open={uploadOpen}
-        onClose={() => console.log("close")}
+        open={uploadOpen && (!error || !success)}
+        onClose={() => setUploadOpen(false)}
         progress={uploadProgress}
         label={uploadLabel}
       />

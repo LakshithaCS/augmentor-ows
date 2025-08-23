@@ -49,7 +49,6 @@ function Navbar() {
 
     if (userinfo && userinfo !== undefined) {
       let user = JSON.parse(userinfo);
-      console.log(user);
       setUserProfile(user);
     }
   }, []);
@@ -63,28 +62,32 @@ function Navbar() {
         </div>
 
         <ul className={`nav-links ${isOpen ? "active" : ""}`}>
-          <li
-            style={{
-              margin: "30px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              paddingLeft: "0px"
-            }}
-            className="d-flex d-lg-none"
-          >
-            <div>
-              <span
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "16px",
-                  color: "#4CAF50",
-                }}
-              >
-                Hi, {userProfile.name}
-              </span>
-            </div>
-          </li>
+          {userProfile.name.length !== 0 ? (
+            <li
+              style={{
+                margin: "30px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                paddingLeft: "0px",
+              }}
+              className="d-flex d-lg-none"
+            >
+              <div>
+                <span
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "16px",
+                    color: "#4CAF50",
+                  }}
+                >
+                  Hi, {userProfile.name}
+                </span>
+              </div>
+            </li>
+          ) : (
+            <li style={{ marginTop: "30px" }}></li>
+          )}
           <li>
             <a href="/#home" onClick={closeMenu}>
               Home
@@ -110,6 +113,12 @@ function Navbar() {
               Contact
             </a>
           </li>
+
+          {userProfile.name.length !== 0 && <li className="logout-item">
+            <a onClick={logOut}>
+              Logout
+            </a>
+          </li>}
         </ul>
 
         {/* Hamburger Icon */}

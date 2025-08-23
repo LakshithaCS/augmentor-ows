@@ -102,9 +102,11 @@
 .hamburger.open span:nth-child(1) {
     transform: rotate(45deg) translate(5px, 5px);
 }
+
 .hamburger.open span:nth-child(2) {
     opacity: 0;
 }
+
 .hamburger.open span:nth-child(3) {
     transform: rotate(-45deg) translate(6px, -6px);
 }
@@ -144,5 +146,30 @@
 
     .nav-links.active {
         right: 0;
+    }
+
+    .logout-item {
+        position: absolute;
+        bottom: 50px;
+        /* distance from bottom of screen */
+        width: calc(100% - 40px);
+        /* full width minus padding */
+    }
+
+    .logout-item a {
+        display: block;
+        padding: 12px 20px;
+        background-color: #222; /* dark blackish */
+        color: #fff; /* white text */
+        border-radius: 8px;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        transition: background 0.3s;
+    }
+
+    .logout-item a:hover {
+        background-color: #ff7875;
+        /* lighter red on hover */
     }
 }
