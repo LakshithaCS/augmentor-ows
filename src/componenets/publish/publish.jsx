@@ -356,7 +356,7 @@ function Publish() {
           <FileUpload
             heading={"3D Model File"}
             uploadButtonText={"CHOOSE FILE"}
-            acceptFileType={".glb"}
+            acceptFileType={".glb,model/gltf-binary"}
             onFileSelect={(file) => handleFileChange("modelFile", file)}
             helperText="3D model file cannot be empty"
             error={formData.modelFile == null && submit}
