@@ -16,7 +16,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
+    width: 80vw;
     margin: 0 auto;
 }
 
@@ -157,6 +157,7 @@
     }
 
     .logout-item a {
+        width: 70vw;
         display: block;
         padding: 12px 20px;
         background-color: #222; /* dark blackish */

@@ -56,8 +56,8 @@ function Navbar() {
   return (
     <nav className="navbar">
       <div className="nav-container">
-        <div className="brand">
-          <img src="/images/logo.png" alt="Logo" className="logo-img" />
+        <div className="brand" >
+          {/* <img src="/images/logo.png" alt="Logo" className="logo-img" /> */}
           <div className="logo-text">AugmentoR</div>
         </div>
 
@@ -94,27 +94,27 @@ function Navbar() {
             </a>
           </li>
           <li>
-            <a href="/#about" onClick={closeMenu}>
-              About
-            </a>
-          </li>
-          <li>
             <a href="/#services" onClick={closeMenu}>
               Services
             </a>
           </li>
           <li>
             <a href="/publish/model" onClick={closeMenu}>
-              Models
+              CreatorHub
+            </a>
+          </li>
+          <li>
+            <a href="/#about" onClick={closeMenu}>
+              AboutUs
             </a>
           </li>
           <li>
             <a href="/#contact" onClick={closeMenu}>
-              Contact
+              ContactUs
             </a>
           </li>
 
-          {userProfile.name.length !== 0 && <li className="logout-item">
+          {userProfile.name.length !== 0 && <li className="logout-item d-block d-lg-none">
             <a onClick={logOut}>
               Logout
             </a>

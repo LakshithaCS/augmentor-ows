@@ -6,6 +6,7 @@ import Hero from './componenets/hero/hero';
 import About from './componenets/about/about';
 import Publish from './componenets/publish/publish';
 import Services from "./componenets/services/services";
+import Contact from "./componenets/contact/contact";
 import Test from "./componenets/demo/test";
 
 function App() {
@@ -18,8 +19,9 @@ function App() {
           element={
             <Layout>
               <Hero />
-              <About />
               <Services />
+              <About />
+              <Contact />
             </Layout>
           }
         />
