@@ -52,3 +52,90 @@ h5 {
         right: 10px;
     }
 }
+
+
+
+.file-requirements-table {
+  width: 100%;
+  border-collapse: collapse; /* merges borders */
+  background-color: rgba(255, 255, 255, 0.05);
+  margin: 1.5% 1%;
+}
+
+.file-requirements-table td, 
+.file-requirements-table th {
+  border: 1px solid rgba(255, 255, 255, 0.1); /* border for cells */
+  padding: 8px;
+  text-align: left;
+}
+
+.file-requirements-table td:first-child {
+  width: 30%;
+  vertical-align: top;
+}
+
+.file-requirements-table td:nth-child(2) {
+  width: 70%; /* second column takes rest */
+}
+
+
+
+.validation-errors-table {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-collapse: collapse; /* merges borders */
+  margin: 1.5% 1%;
+}
+
+.validation-errors-table td, 
+.validation-errors-table th {
+  border: 1px solid rgba(255, 255, 255, 0.1); /* border for cells */
+  padding: 8px;
+  text-align: left;
+}
+
+.validation-errors-table td:first-child {
+  width: 17%;
+  vertical-align: top;
+}
+
+.validation-errors-table td:nth-child(2) {
+  width: 8%; /* second column takes rest */
+}
+
+.validation-errors-table td:nth-child(3) {
+  width: 50%; /* second column takes rest */
+}
+
+.validation-errors-table td:nth-child(4) {
+  width: 25%; /* second column takes rest */
+}
+
+code {
+ color: #00d4ff;
+}
+
+.nav-panel {
+    height: 100%;
+    padding: 5%;
+    padding-top: 70px;
+    background-color: rgba(255, 255, 255, 0.05);
+    position: fixed; 
+}
+
+.nav-panel .headings {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-panel .headings li{
+ margin-bottom: 20px;
+ font-size: 15px;
+ font-weight: 700;
+}
+
+.nav-panel .headings li a{
+ text-decoration: none;
+  color: inherit;  
+}
