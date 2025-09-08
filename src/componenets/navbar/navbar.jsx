@@ -100,17 +100,17 @@ function Navbar() {
           </li>
           <li>
             <a href="/publish/model" onClick={closeMenu}>
-              CreatorHub
+              Creator Hub
             </a>
           </li>
           <li>
             <a href="/#about" onClick={closeMenu}>
-              AboutUs
+              About Us
             </a>
           </li>
           <li>
             <a href="/#contact" onClick={closeMenu}>
-              ContactUs
+              Contact Us
             </a>
           </li>
 

@@ -24,8 +24,9 @@ h5 {
 }
 
 .image-container {
+    width: 60%;
+    margin: 3% 10%;
     position: relative;
-
 }
 
 .bottom-img {
@@ -123,19 +124,81 @@ code {
     position: fixed; 
 }
 
-.nav-panel .headings {
+.headings {
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
 
-.nav-panel .headings li{
+.headings li{
  margin-bottom: 20px;
  font-size: 15px;
  font-weight: 700;
 }
 
-.nav-panel .headings li a{
- text-decoration: none;
-  color: inherit;  
+.headings li a{
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.headings li a::hover {
+    color: #00d4ff;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+}
+
+
+.headings li a::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(45deg, #00d4ff, #ff00ff);
+    transition: width 0.3s ease;
+}
+
+.headings li a:hover::after {
+    width: 100%;
+}
+
+.left-panel {
+  width: 75%;
+}
+
+.right-panel {
+  width: 25%;
+}
+
+.mobile-sub-nav-bar {
+  display: none;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-top: 30px;
+}
+
+@media (max-width: 768px) {
+
+  .mobile-sub-nav-bar {
+    display: block;
+  }
+
+  .image-container {
+    width: 80%;
+  }
+
+  .left-panel {
+    width: 100%;
+  }
+
+  .right-panel {
+    width: 0%;
+  }
+
+  .headings li{
+    margin-bottom: 10px;
+  }
 }

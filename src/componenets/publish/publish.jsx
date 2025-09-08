@@ -4,14 +4,16 @@ import Switch from "@mui/material/Switch";
 import InputAdornment from "@mui/material/InputAdornment";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import Button from "@mui/material/Button";
-import Snackbar from "@mui/material/Snackbar";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import Autocomplete from "@mui/material/Autocomplete";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import DialogTitle from "@mui/material/DialogTitle";
-import Dialog from "@mui/material/Dialog";
-import Chip from "@mui/material/Chip";
+import Accordion from "@mui/material/Accordion";
+import AccordionActions from "@mui/material/AccordionActions";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { signInWithPopup } from "firebase/auth";
 
 import FileUpload from "../fileupload/fileupload";
@@ -50,6 +52,42 @@ var styles = {
     color: "#fff",
     "&.Mui-focused": {
       color: "secondary.main",
+    },
+  },
+};
+
+var dropDownStyles = {
+  paper: {
+    sx: {
+      backgroundColor: "#20202C",
+      "& .MuiAutocomplete-option": {
+        color: "#fff",
+        fontWeight: 500,
+        textDecoration: "none",
+        transition: "all 0.3s ease",
+        position: "relative",
+
+        // Default underline (hidden)
+        "&::after": {
+          content: '""',
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          width: 0,
+          height: "2px",
+          background: "linear-gradient(45deg, #00d4ff, #ff00ff)",
+          transition: "width 0.3s ease",
+        },
+
+        // Hover state
+        "&:hover": {
+          color: "#00d4ff",
+          textShadow: "0 0 10px rgba(0, 212, 255, 0.8)",
+        },
+        "&:hover::after": {
+          width: "100%",
+        },
+      },
     },
   },
 };
@@ -215,9 +253,13 @@ function Publish() {
     if (valid) {
       setUploadOpen(true);
       const userinfo = localStorage.getItem("GOOGLE_USER_INFO");
-      if (userinfo && userinfo !== undefined) {
+      if (userinfo && userinfo != undefined) {
         let user = JSON.parse(userinfo);
-        await uploadToStorage(user);
+        if (user.uid && user.uid != undefined) {
+          await uploadToStorage(user);
+        } else {
+          loginAndUpload();
+        }
       } else {
         loginAndUpload();
       }
@@ -278,8 +320,38 @@ function Publish() {
         />
       </Backdrop>
       <div className="row">
-        <div className="col-9">
-          <div className="row" style={{ margin: "1.5% 4%" }}>
+        <div className="mobile-sub-nav-bar">
+          <Accordion style={{ backgroundColor: "#20202C" }}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon sx={{color: "#fff"}} />}
+              aria-controls="panel2-content"
+              id="panel2-header"
+            >
+              <Typography component="span" style={{color: "#fff", fontWeight: 500, fontSize: "20px"}}>On this page</Typography>
+            </AccordionSummary>
+            <AccordionDetails style={{ backgroundColor: "#20202C", paddingLeft: "30px" }}>
+              <ul className="headings">
+                <li>
+                  <a href="#file-requirements">File requirements for models</a>
+                </li>
+                <li>
+                  <a href="#model-validation">Validating your 3D model</a>
+                </li>
+                <li>
+                  <a href="#adding-model">Adding 3D models for validation</a>
+                </li>
+                <li>
+                  <a href="#validation-error">Validation errors</a>
+                </li>
+                <li>
+                  <a href="#model-compatibility">Model compatibility</a>
+                </li>
+              </ul>
+            </AccordionDetails>
+          </Accordion>
+        </div>
+        <div className="left-panel">
+          <div className="row" style={{ margin: "1.5% 4%", marginTop: "20px" }}>
             <h3 style={{ margin: "3% 0" }}>
               3D Model Submission & Preview - AugmentoR Creator Hub
             </h3>
@@ -335,6 +407,7 @@ function Publish() {
                   handleChange("category", newInputValue)
                 }
                 sx={styles}
+                slotProps={dropDownStyles}
                 popupIcon={<ArrowDropDownIcon sx={{ color: "#fff" }} />}
                 renderInput={(params) => (
                   <TextField
@@ -494,7 +567,7 @@ function Publish() {
                   </h5>
                 </div>
                 {formData.preview && (
-                  <div class="image-container" style={styles}>
+                  <div className="image-container">
                     <img
                       src={URL.createObjectURL(formData.thumbnail)}
                       alt="Bottom Image"
@@ -590,7 +663,7 @@ function Publish() {
                 </h5>
               </div>
               {formData.preview && (
-                <div class="image-container" style={styles}>
+                <div className="image-container">
                   <img
                     src={URL.createObjectURL(formData.thumbnail)}
                     alt="Bottom Image"
@@ -676,7 +749,7 @@ function Publish() {
                 </h5>
 
                 {formData.preview && (
-                  <div class="image-container" style={styles}>
+                  <div className="image-container">
                     <img
                       src={URL.createObjectURL(formData.thumbnail)}
                       alt="Bottom Image"
@@ -717,7 +790,11 @@ function Publish() {
             </div>
           </div>
 
-          <div className="row" style={{ margin: "1.5% 4%" }} id="file-requirements">
+          <div
+            className="row"
+            style={{ margin: "1.5% 4%" }}
+            id="file-requirements"
+          >
             <h3 style={{ margin: "3% 0" }}>File requirements for models</h3>
             <p>
               Scene Viewer has the following support and limitations for models.
@@ -877,7 +954,11 @@ function Publish() {
             </table>
           </div>
 
-          <div className="row" style={{ margin: "1.5% 4%" }} id="model-validation">
+          <div
+            className="row"
+            style={{ margin: "1.5% 4%" }}
+            id="model-validation"
+          >
             <h3 style={{ margin: "3% 0" }}>Validating your 3D model</h3>
             <p>
               To validate a model, the previewer tool needs one glb or glTF
@@ -897,10 +978,11 @@ function Publish() {
                     Open the{" "}
                     <a
                       href="https://arvr.google.com/scene-viewer-preview"
+                      target="_blank"
                       class="external"
                     >
-                      online previewer tool
-                    </a>
+                      online previewer tool ↗
+                    </a>{" "}
                     in a browser.
                   </p>
                 </li>
@@ -944,10 +1026,14 @@ function Publish() {
             <h3 style={{ margin: "3% 0" }}>Adding 3D models for validation</h3>
             <p>
               To validate a 3D model, add the files that make up the 3D model to
-              our{" "}
-              <a href="https://modelviewer.dev/editor/" class="external">
-                Model Editor tool
-              </a>
+              the{" "}
+              <a
+                href="https://modelviewer.dev/editor/"
+                class="external"
+                target="_blank"
+              >
+                Model Editor tool ↗
+              </a>{" "}
               .
             </p>
             <p>
@@ -966,8 +1052,12 @@ function Publish() {
                 <li>
                   <p>
                     Open the{" "}
-                    <a href="https://modelviewer.dev/editor/" class="external">
-                      Model Editor tool
+                    <a
+                      href="https://modelviewer.dev/editor/"
+                      class="external"
+                      target="_blank"
+                    >
+                      Model Editor tool ↗
                     </a>{" "}
                     in a browser.
                   </p>
@@ -1003,7 +1093,11 @@ function Publish() {
             </p>
           </div>
 
-          <div className="row" style={{ margin: "1.5% 4%" }} id="validation-error">
+          <div
+            className="row"
+            style={{ margin: "1.5% 4%" }}
+            id="validation-error"
+          >
             <h3 style={{ margin: "3% 0" }}>Validation errors</h3>
             <table className="validation-errors-table">
               <tbody>
@@ -1326,11 +1420,15 @@ function Publish() {
             </table>
           </div>
 
-          <div className="row" style={{ margin: "1.5% 4%" }} id="model-compatibility">
+          <div
+            className="row"
+            style={{ margin: "1.5% 4%" }}
+            id="model-compatibility"
+          >
             <h3 style={{ margin: "3% 0" }}>Model compatibility</h3>
             <p>
               Models in the{" "}
-              <a href="https://www.khronos.org/gltf/">
+              <a href="https://www.khronos.org/gltf/" target="_blank">
                 <code translate="no" dir="ltr">
                   gltf
                 </code>{" "}
@@ -1345,7 +1443,10 @@ function Publish() {
                 &lt;model-viewer&gt;
               </code>
               . Refer to the{" "}
-              <a href="https://threejs.org/docs/#examples/en/loaders/GLTFLoader">
+              <a
+                href="https://threejs.org/docs/#examples/en/loaders/GLTFLoader"
+                target="_blank"
+              >
                 <code translate="no" dir="ltr">
                   three.js GLTFLoader documentation
                 </code>
@@ -1354,31 +1455,35 @@ function Publish() {
             </p>
             <p>
               To ensure that your model will display properly, check your model
-              in <a href="https://modelviewer.dev/editor/">Model Editor</a>.
+              in{" "}
+              <a href="https://modelviewer.dev/editor/" target="_blank">
+                Model Editor ↗{" "}
+              </a>
+              .
             </p>
           </div>
         </div>
-        <div className="col-3">
+        <div className="right-panel">
           <div className="nav-panel">
-              <h5>On This Page</h5>
-              <br/>
-              <ul className="headings">
-                <li>
-                  <a href="#file-requirements">File requirements for models</a>
-                </li>
-                <li>
-                  <a href="#model-validation">Validating your 3D model</a>
-                </li>
-                <li>
-                  <a href="#adding-model">Adding 3D models for validation</a>
-                </li>
-                <li>
-                  <a href="#validation-error">Validation errors</a>
-                </li>
-                <li>
-                  <a href="#model-compatibility">Model compatibility</a>
-                </li>
-              </ul>
+            <h5>On This Page</h5>
+            <br />
+            <ul className="headings">
+              <li>
+                <a href="#file-requirements">File requirements for models</a>
+              </li>
+              <li>
+                <a href="#model-validation">Validating your 3D model</a>
+              </li>
+              <li>
+                <a href="#adding-model">Adding 3D models for validation</a>
+              </li>
+              <li>
+                <a href="#validation-error">Validation errors</a>
+              </li>
+              <li>
+                <a href="#model-compatibility">Model compatibility</a>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
