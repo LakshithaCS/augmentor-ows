@@ -211,7 +211,7 @@ function Publish() {
 
     setUploadOpen(false);
     if (!error) {
-      setSuccessMessage("UPLOADING SUCCESS");
+      setSuccessMessage("YOUR MODEL HAS BEEN SENT FOR REVIEW, YOU WILL RECEIVE AN EMAIL OF THE REVIEW STATUS SHORTLY!");
       setSuccess(true);
     }
   };
