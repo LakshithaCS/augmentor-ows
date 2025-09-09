@@ -85,7 +85,7 @@ var dropDownStyles = {
           textShadow: "0 0 10px rgba(0, 212, 255, 0.8)",
         },
         "&:hover::after": {
-          width: "100%",
+          // width: "100%",
         },
       },
     },

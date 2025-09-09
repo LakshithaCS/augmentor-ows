@@ -1,0 +1,57 @@
+/* Footer.css */
+.footer {
+  background-color: #1a1a1a;
+  color: #fff;
+  padding: 20px 10%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+}
+
+/* Left Section */
+.footer-left a {
+  color: #fff;
+  margin-right: 12px;
+  font-size: 1rem;
+  transition: color 0.3s;
+}
+.footer-left a:hover {
+  color: #00bcd4;
+}
+
+/* Middle Section */
+.footer-middle {
+  text-align: center;
+  flex: 1;
+}
+.footer-middle p {
+  margin: 3px 0;
+  font-size: 0.8rem;
+}
+
+/* Right Section */
+.footer-right a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 5px;
+  transition: color 0.3s;
+}
+.footer-right a:hover {
+  color: #00bcd4;
+}
+
+/* Responsive (stacked on mobile) */
+@media (max-width: 768px) {
+  .footer {
+    flex-direction: column;
+    text-align: center;
+  }
+  .footer-left {
+    margin-bottom: 10px;
+  }
+  .footer-right {
+    margin-top: 10px;
+  }
+}

@@ -206,7 +206,7 @@
     box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
     position: relative;
     overflow: hidden;
-    border: 2px solid transparent;
+    border: 0px solid transparent;
 }
 
 .cta-button.secondary {

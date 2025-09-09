@@ -1,4 +1,5 @@
 import Navbar from "../navbar/navbar";
+import Footer from "../footer/footer";
 import "./layout.css"
 
 function Layout({ children }) {
@@ -8,6 +9,7 @@ function Layout({ children }) {
             <div className="section-container">
                 {children}
             </div>
+            <Footer />
         </>
     );
 }

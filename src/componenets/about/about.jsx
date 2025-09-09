@@ -1,3 +1,4 @@
+import Counter from "../counter/counter";
 import "./about.css";
 
 function About() {
@@ -23,22 +24,30 @@ function About() {
 
                 <div class="stats">
                     <div class="stat-item">
-                        <span class="stat-number">470+</span>
+                        <span class="stat-number">
+                            <Counter value={470}/>+
+                        </span>
                         <div class="stat-label">AR Projects Completed</div>
                     </div>
             
                     <div class="stat-item">
-                        <span class="stat-number">40+</span>
+                        <span class="stat-number">
+                            <Counter value={40}/>+
+                        </span>
                         <div class="stat-label">Enterprise Clients</div>
                     </div>
             
                     <div class="stat-item">
-                        <span class="stat-number">7500+</span>
+                        <span class="stat-number">
+                            <Counter value={7500}/>+
+                        </span>
                         <div class="stat-label">AR Experiences Delivered</div>
                     </div>
                 
                     <div class="stat-item">
-                        <span class="stat-number">99%</span>
+                        <span class="stat-number">
+                            <Counter value={99}/>%
+                        </span>
                         <div class="stat-label">Client Satisfaction</div>
                     </div>
                 </div>
