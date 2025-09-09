@@ -64,7 +64,7 @@ async function upload(
 
   if (audio?.name) {
     try {
-      setUploadLabel("Uploading Aduio File.......");
+      setUploadLabel("Uploading Audio File.......");
       let audioDownloadUrl = await uploadFileToStorage(
         audio,
         audioPath,

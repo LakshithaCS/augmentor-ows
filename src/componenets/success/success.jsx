@@ -8,6 +8,7 @@ function SuccessDialog({ onClose, open, msg }) {
       open={open}
       fullWidth
       maxWidth="sm"
+      sx={{maxWidth: "100vw"}}
       PaperProps={{
         style: { padding: "24px", textAlign: "center" },
       }}

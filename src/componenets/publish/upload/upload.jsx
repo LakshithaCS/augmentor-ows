@@ -29,6 +29,7 @@ function UploadDialog({ onClose, open, progress, label }) {
       open={open}
       fullWidth
       maxWidth="sm" // change to "md" if you need wider
+      sx={{maxWidth: "100vw"}}
     >
       <div className="flex flex-col p-4 w-full">
         <div className="mb-3 text-lg font-medium text-center">{label}</div>

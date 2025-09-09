@@ -303,7 +303,7 @@ function Publish() {
         label={uploadLabel}
       />
       <Backdrop
-        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1, maxWidth: "100vw" })}
         open={categories.length === 0}
       >
         <svg width={0} height={0}>
