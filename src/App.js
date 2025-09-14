@@ -1,13 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import './App.css';
-import Layout from './componenets/layout/layout';
-import Hero from './componenets/hero/hero';
-import About from './componenets/about/about';
-import Publish from './componenets/publish/publish';
-import Services from "./componenets/services/services";
-import Contact from "./componenets/contact/contact";
-import IFrame from "./componenets/iframe/iframe";
+import Layout from './components/layout/layout';
+import Hero from './components/hero/hero';
+import About from './components/about/about';
+import Publish from './components/publish/publish';
+import Services from "./components/services/services";
+import Contact from "./components/contact/contact";
+import IFrame from "./components/iframe/iframe";
 
 function App() {
   return (
