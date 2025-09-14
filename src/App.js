@@ -37,7 +37,7 @@ function App() {
         />
 
         <Route 
-          path="/webxr"
+          path="/webar"
           element=<IFrame />
         />
       </Routes>
