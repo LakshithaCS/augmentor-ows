@@ -10,12 +10,21 @@ const ImageUpload = ({
   error,
 }) => {
   const [file, setFile] = useState(null);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [showError, setShowError] = useState(false);
 
   const handleFileChange = (event) => {
+
     const selectedFile = event.target.files[0];
-    onFileSelect(selectedFile);
-    if (selectedFile) {
-      setFile(URL.createObjectURL(selectedFile)); // Create image preview URL
+    if (selectedFile && selectedFile != null) {
+
+      if(selectedFile.name.endsWith(".png")){
+        onFileSelect(selectedFile);
+        setFile(URL.createObjectURL(selectedFile)); // Create image preview URL
+      } else {
+        setErrorMsg("Please Select a png File");
+        setShowError(true);
+      }
     }
   };
 
@@ -85,12 +94,14 @@ const ImageUpload = ({
                 sx={{ fontSize: 150, color: "rgba(0, 213, 255, 0.37)" }}
               />
             </IconButton>
-            
           )}
         </label>
         {error && (
-                  <Typography sx={{ mt: 1, color: "#d32f2f" }}>{helperText}</Typography>
-                )}
+          <Typography sx={{ mt: 1, color: "#d32f2f" }}>{helperText}</Typography>
+        )}
+        {!error && showError && (
+          <Typography sx={{ mt: 1, color: "#d32f2f" }}>{errorMsg}</Typography>
+        )}
         <input
           id="file-upload"
           type="file"

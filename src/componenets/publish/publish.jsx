@@ -211,7 +211,7 @@ function Publish() {
 
     setUploadOpen(false);
     if (!error) {
-      setSuccessMessage("YOUR MODEL HAS BEEN SENT FOR REVIEW, YOU WILL RECEIVE AN EMAIL OF THE REVIEW STATUS SHORTLY!");
+      setSuccessMessage("Your Model Has Been Sent for Review, You Will Receive an Email of the Review Status Shortly!");
       setSuccess(true);
     }
   };
@@ -591,7 +591,7 @@ function Publish() {
               <ImageUpload
                 heading={"Select a Thumbnail"}
                 uploadButtonText={"CHOOSE FILE"}
-                acceptFileType={"image/*"}
+                acceptFileType={".png,image/png"}
                 onFileSelect={(file) => handleFileChange("thumbnail", file)}
                 helperText="Thumbnail cannot be empty"
                 error={formData.thumbnail == null && submit}

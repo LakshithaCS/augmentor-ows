@@ -105,12 +105,12 @@ function Navbar() {
           </li>
           <li>
             <a href="/#about" onClick={closeMenu}>
-              About Us
+              About
             </a>
           </li>
           <li>
             <a href="/#contact" onClick={closeMenu}>
-              Contact Us
+              Contact
             </a>
           </li>
 

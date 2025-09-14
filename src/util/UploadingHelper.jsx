@@ -109,7 +109,7 @@ async function upload(
 async function push(data, userId, setUploadLabel, setError, setErrorMessage) {
   const bashPath = `/ForReview/FileSubmission/${userId}`;
   try {
-    setUploadLabel("Updating Model Information.......");
+    setUploadLabel("Uploading Model Information.......");
     await pushModelDataToRealTimeDatabase(bashPath, data);
     return true;
   } catch (e) {
