@@ -7,7 +7,7 @@ import About from './componenets/about/about';
 import Publish from './componenets/publish/publish';
 import Services from "./componenets/services/services";
 import Contact from "./componenets/contact/contact";
-import Test from "./componenets/demo/test";
+import IFrame from "./componenets/iframe/iframe";
 
 function App() {
   return (
@@ -37,8 +37,8 @@ function App() {
         />
 
         <Route 
-          path="/test"
-          element=<Test />
+          path="/webxr"
+          element=<IFrame />
         />
       </Routes>
     </Router>
