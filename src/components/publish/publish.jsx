@@ -211,7 +211,7 @@ function Publish() {
 
     setUploadOpen(false);
     if (!error) {
-      setSuccessMessage("Your Model Has Been Sent for Review, You Will Receive an Email of the Review Status Shortly!");
+      setSuccessMessage("Your model has been submitted for review. You’ll receive an email update on the review status shortly.");
       setSuccess(true);
     }
 
