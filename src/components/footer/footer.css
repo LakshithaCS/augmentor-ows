@@ -8,6 +8,7 @@
   align-items: center;
   font-size: 0.85rem;
   flex-wrap: wrap;
+  z-index: 9999;
 }
 
 /* Left Section */

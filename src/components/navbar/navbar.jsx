@@ -12,13 +12,10 @@ function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [userProfile, setUserProfile] = useState({
-    sub: "",
-    name: "",
-    given_name: "",
-    family_name: "",
-    picture: "",
+    photo: "",
     email: "",
-    email_verified: false,
+    uid: "",
+    name: "",
   });
 
   const toggleMenu = () => {
@@ -47,7 +44,7 @@ function Navbar() {
   useEffect(() => {
     const userinfo = localStorage.getItem("GOOGLE_USER_INFO");
 
-    if (userinfo && userinfo !== undefined) {
+    if (userinfo && userinfo !== undefined && userinfo != null) {
       let user = JSON.parse(userinfo);
       setUserProfile(user);
     }
@@ -56,9 +53,11 @@ function Navbar() {
   return (
     <nav className="navbar">
       <div className="nav-container">
-        <div className="brand" >
+        <div className="brand">
           {/* <img src="/images/logo.png" alt="Logo" className="logo-img" /> */}
-          <div className="logo-text">AugmentoR</div>
+          <div className="logo-text">
+            <a href="/">AugmentoR</a>
+          </div>
         </div>
 
         <ul className={`nav-links ${isOpen ? "active" : ""}`}>
@@ -114,11 +113,11 @@ function Navbar() {
             </a>
           </li>
 
-          {userProfile.name.length !== 0 && <li className="logout-item d-block d-lg-none">
-            <a onClick={logOut}>
-              Logout
-            </a>
-          </li>}
+          {userProfile.name.length !== 0 && (
+            <li className="logout-item d-block d-lg-none">
+              <a onClick={logOut}>Logout</a>
+            </li>
+          )}
         </ul>
 
         {/* Hamburger Icon */}
@@ -132,42 +131,54 @@ function Navbar() {
         </div>
       </div>
       <div className="profile d-none d-lg-block">
-        {!userProfile.photo == "" && (
+        {
           <>
             <div className="row">
               <div className="col-3">
-                <Avatar alt={userProfile.name} src={userProfile.photo} />
+                <Avatar
+                  alt={userProfile.name !== "" ? userProfile.name : "profile"}
+                  src={
+                    userProfile.photo !== ""
+                      ? userProfile.photo
+                      : "/images/user.png"
+                  }
+                />
               </div>
               <div className="col-2">
-                <Button
-                  id="basic-button"
-                  aria-controls={open ? "basic-menu" : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={open ? "true" : undefined}
-                  onClick={handleClick}
-                >
-                  <ArrowDropDownIcon />
-                </Button>
-                <Menu
-                  id="basic-menu"
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={handleClose}
-                  slotProps={{
-                    list: {
-                      "aria-labelledby": "basic-button",
-                    },
-                  }}
-                >
-                  <div style={{ padding: "10px" }}>
-                    <h5>{userProfile.name}</h5>
-                    <MenuItem onClick={logOut}>Logout</MenuItem>
-                  </div>
-                </Menu>
+                {userProfile.photo != "" && (
+                  <Button
+                    id="basic-button"
+                    aria-controls={open ? "basic-menu" : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? "true" : undefined}
+                    onClick={handleClick}
+                  >
+                    <ArrowDropDownIcon />
+                  </Button>
+                )}
+
+                {userProfile.photo != "" && (
+                  <Menu
+                    id="basic-menu"
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                    slotProps={{
+                      list: {
+                        "aria-labelledby": "basic-button",
+                      },
+                    }}
+                  >
+                    <div style={{ padding: "10px" }}>
+                      <h5>{userProfile.name}</h5>
+                      <MenuItem onClick={logOut}>Logout</MenuItem>
+                    </div>
+                  </Menu>
+                )}
               </div>
             </div>
           </>
-        )}
+        }
       </div>
     </nav>
   );

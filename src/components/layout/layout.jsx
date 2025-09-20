@@ -6,7 +6,7 @@ function Layout({ children }) {
     return (
         <>
             <Navbar />
-            <div className="section-container">
+            <div className="section-container" style={{paddingBottom: "50px"}}>
                 {children}
             </div>
             <Footer />

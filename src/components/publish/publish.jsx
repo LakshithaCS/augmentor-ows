@@ -170,7 +170,7 @@ function Publish() {
     if (
       field === "preview" &&
       value &&
-      (formData.thumbnail === null || formData.price === "")
+      (formData.thumbnail === null || (formData.price === "" && !formData.isFree))
     ) {
       setErrorMessage("PLEASE SELECT THE THUMBNAIL AND MARK THE PRICE!");
       setError(true);
@@ -214,7 +214,24 @@ function Publish() {
       setSuccessMessage("Your Model Has Been Sent for Review, You Will Receive an Email of the Review Status Shortly!");
       setSuccess(true);
     }
+
+    clearForm();
   };
+
+  const clearForm = () => {
+      setFormData({
+      modelName: "",
+      category: "",
+      isFree: false,
+      syncAudio: false,
+      price: "",
+      modelFile: null,
+      audioFile: null,
+      thumbnail: null,
+      preview: false,
+      email: "",
+    });
+  }
 
   const uploadToRealTimeDatabase = async (downloadUrls, user, epochMillis) => {
     const modelData = {
@@ -294,7 +311,7 @@ function Publish() {
       <SuccessDialog
         open={success}
         msg={successMessage}
-        onClose={() => setSuccess(false)}
+        onClose={() => {setSuccess(false); window.location.reload()}}
       />
       <UploadDialog
         open={uploadOpen && (!error || !success)}
@@ -571,13 +588,13 @@ function Publish() {
                     <img
                       src={URL.createObjectURL(formData.thumbnail)}
                       alt="Bottom Image"
-                      class="bottom-img"
+                      className="bottom-img"
                     />
                     {(formData.isFree || !isPositiveNumber(formData.price)) && (
                       <img
                         src="/images/ribbon.png"
                         alt="Top Image"
-                        class="top-img"
+                        className="top-img"
                       />
                     )}
                   </div>
@@ -667,13 +684,13 @@ function Publish() {
                   <img
                     src={URL.createObjectURL(formData.thumbnail)}
                     alt="Bottom Image"
-                    class="bottom-img"
+                    className="bottom-img"
                   />
                   {(formData.isFree || !isPositiveNumber(formData.price)) && (
                     <img
                       src="/images/ribbon.png"
                       alt="Top Image"
-                      class="top-img"
+                      className="top-img"
                     />
                   )}
                 </div>
@@ -753,13 +770,13 @@ function Publish() {
                     <img
                       src={URL.createObjectURL(formData.thumbnail)}
                       alt="Bottom Image"
-                      class="bottom-img"
+                      className="bottom-img"
                     />
                     {(formData.isFree || !isPositiveNumber(formData.price)) && (
                       <img
                         src="/images/ribbon.png"
                         alt="Top Image"
-                        class="top-img"
+                        className="top-img"
                       />
                     )}
                   </div>
@@ -799,7 +816,7 @@ function Publish() {
             <p>
               Scene Viewer has the following support and limitations for models.
             </p>
-            <table class="file-requirements-table">
+            <table className="file-requirements-table">
               <tbody>
                 <tr>
                   <td>
@@ -979,7 +996,7 @@ function Publish() {
                     <a
                       href="https://arvr.google.com/scene-viewer-preview"
                       target="_blank"
-                      class="external"
+                      className="external"
                     >
                       online previewer tool ↗
                     </a>{" "}
@@ -1029,7 +1046,7 @@ function Publish() {
               the{" "}
               <a
                 href="https://modelviewer.dev/editor/"
-                class="external"
+                className="external"
                 target="_blank"
               >
                 Model Editor tool ↗
@@ -1054,7 +1071,7 @@ function Publish() {
                     Open the{" "}
                     <a
                       href="https://modelviewer.dev/editor/"
-                      class="external"
+                      className="external"
                       target="_blank"
                     >
                       Model Editor tool ↗
