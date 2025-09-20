@@ -8,8 +8,11 @@
   align-items: center;
   font-size: 0.85rem;
   flex-wrap: wrap;
-  z-index: 9999;
+
+  position: relative;  /* stays in flow, keeps flexbox working */
+  z-index: 9999;       /* brings it on top */
 }
+
 
 /* Left Section */
 .footer-left a {
