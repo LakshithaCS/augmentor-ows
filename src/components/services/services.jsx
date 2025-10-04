@@ -89,7 +89,7 @@ function Services() {
           <div className="feature-card">
             <h3>Home AR</h3>
             <div className="feature-gif">
-              <img src="/images/services/Home Ar/FAEKFv.gif" alt="Feature animation" />
+              <img src="/images/services/Home Ar/ar-home.gif" alt="Feature animation" />
             </div>
             <p>
               Why wait for your dream home to be built when you can see it now? With AugmentoR, you can view your
