@@ -25,7 +25,7 @@ function About() {
                 <div class="stats">
                     <div class="stat-item">
                         <span class="stat-number">
-                            <Counter value={470}/>+
+                            <Counter value={480}/>+
                         </span>
                         <div class="stat-label">AR Projects Completed</div>
                     </div>
